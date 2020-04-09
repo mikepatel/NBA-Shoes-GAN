@@ -60,17 +60,20 @@ def build_discriminator(input_shape):
         units=1,
     ))
 
-    return m
+    # model inputs and outputs
+    image = tf.keras.layers.Input(shape=input_shape)
+    output = m(image)
+    return tf.keras.Model(inputs=image, outputs=output)
 
 
 # Generator
-def build_generator():
+def build_generator(noise_dim):
     m = tf.keras.Sequential()
 
     # Layer 1
     m.add(tf.keras.layers.Dense(
         units=64*64*64,
-        input_shape=(NOISE_DIM, ),
+        input_dim=noise_dim,
         activation=tf.keras.activations.relu
     ))
 
@@ -86,6 +89,7 @@ def build_generator():
         filters=512,
         kernel_size=(4, 4),
         strides=2,
+        padding="same",
         activation=tf.keras.activations.relu
     ))
 
@@ -96,6 +100,7 @@ def build_generator():
         filters=128,
         kernel_size=(4, 4),
         strides=2,
+        padding="same",
         activation=tf.keras.activations.relu
     ))
 
@@ -103,10 +108,15 @@ def build_generator():
 
     # Layer 5
     m.add(tf.keras.layers.Conv2DTranspose(
-        filters=1,
+        filters=3,
         kernel_size=(4, 4),
         strides=2,
+        padding="same",
         activation=tf.keras.activations.tanh
     ))
 
-    return m
+    # model inputs and outputs
+    z = tf.keras.layers.Input(shape=(noise_dim, ))
+    image = m(z)
+
+    return tf.keras.Model(inputs=z, outputs=image)

@@ -76,6 +76,35 @@ def plotImages(images_arr):
     plt.show()
 
 
+# discriminator loss function
+def discriminator_loss(real_output, generated_output):
+    real_loss = tf.keras.losses.BinaryCrossentropy(
+        from_logits=True,
+        y_true=tf.ones_like(real_output),
+        y_pred=real_output
+    )
+
+    fake_loss = tf.keras.losses.BinaryCrossentropy(
+        from_logits=True,
+        y_true=tf.zeros_like(generated_output),
+        y_pred=generated_output
+    )
+
+    total_loss = real_loss + fake_loss
+    return total_loss
+
+
+# generator loss function
+def generator_loss(generated_output):
+    generated_loss = tf.keras.losses.BinaryCrossentropy(
+        from_logits=True,
+        y_true=tf.ones_like(generated_output),
+        y_pred=generated_output
+    )
+
+    return generated_loss
+
+
 ################################################################################
 # Main
 if __name__ == "__main__":
@@ -116,6 +145,7 @@ if __name__ == "__main__":
     test_data_gen = get_data_gen(dataset="test")
 
     #x = next(train_data_gen)
+    #print(len(x))
     #plotImages(x[:5])
 
     # ----- MODEL ----- #
@@ -126,7 +156,19 @@ if __name__ == "__main__":
         metrics=["accuracy"]
     )
 
-    generator = build_generator()
+    generator = build_generator(100)
+    z = tf.keras.layers.Input(shape=(100, ))
+    image = generator(z)
+
+    discriminator.trainable = False
+    prediction = discriminator(image)
+
+    gan = tf.keras.Model(inputs=z, outputs=prediction)
+    gan.compile(
+        loss=tf.keras.losses.binary_crossentropy,
+        optimizer=tf.keras.optimizers.Adam(),
+        metrics=["accuracy"]
+    )
 
     # ----- TRAINING ----- #
 
