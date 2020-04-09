@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from parameters import *
-#
+from model import build_discriminator, build_generator
 
 
 ################################################################################
@@ -115,5 +115,19 @@ if __name__ == "__main__":
     val_data_gen = get_data_gen(dataset="validation")
     test_data_gen = get_data_gen(dataset="test")
 
-    x = next(train_data_gen)
-    plotImages(x[:5])
+    #x = next(train_data_gen)
+    #plotImages(x[:5])
+
+    # ----- MODEL ----- #
+    discriminator = build_discriminator(input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, NUM_CHANNELS))
+    discriminator.compile(
+        loss=tf.keras.losses.binary_crossentropy,
+        optimizer=tf.keras.optimizers.Adam(),
+        metrics=["accuracy"]
+    )
+
+    generator = build_generator()
+
+    # ----- TRAINING ----- #
+
+    # ----- GENERATION ----- #
