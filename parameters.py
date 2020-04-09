@@ -9,7 +9,7 @@ File description:
     For model and training parameters
 """
 ################################################################################
-NUM_EPOCHS = 1
+NUM_EPOCHS = 3
 BATCH_SIZE = 16
 
 #NOISE_DIM = 100

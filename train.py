@@ -105,6 +105,39 @@ def generator_loss(generated_output):
     return generated_loss
 
 
+# training loop
+def train(train_data_gen, discriminator, generator, gan):
+    # adversarial ground truths
+    valid = np.ones((BATCH_SIZE, 1))
+    fake = np.zeros((BATCH_SIZE, 1))
+
+    for e in range(NUM_EPOCHS):
+        # input for discriminator
+        real_images = next(train_data_gen)
+
+        # input for generator
+        noise_input = np.random.normal(0, 1, size=[BATCH_SIZE, 100])
+        fake_images = generator.predict(noise_input)
+
+        # train discriminator
+        discriminator.trainable = True
+        d_loss_real = discriminator.train_on_batch(real_images, valid)
+        d_loss_fake = discriminator.train_on_batch(fake_images, fake)
+        d_loss = np.add(d_loss_real, d_loss_fake) * 0.5
+
+        # train generator
+        noise_input = np.random.normal(0, 1, size=[BATCH_SIZE, 100])
+        discriminator.trainable = False
+        g_loss = gan.train_on_batch(noise_input, valid)
+
+        print(f'Epoch: {e}')
+        print(f'D real: {d_loss_real}')
+        print(f'D fake: {d_loss_fake}')
+        print(f'D: {d_loss}')
+        print(f'G: {g_loss}')
+        print()
+
+
 ################################################################################
 # Main
 if __name__ == "__main__":
@@ -171,5 +204,6 @@ if __name__ == "__main__":
     )
 
     # ----- TRAINING ----- #
+    train(train_data_gen, discriminator, generator, gan)
 
     # ----- GENERATION ----- #
