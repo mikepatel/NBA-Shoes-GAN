@@ -3,6 +3,7 @@
 A GAN to create basketball shoe designs using TensorFlow 2.0
 
 ## Data
+* Data set courtesy of [CShorten](https://github.com/CShorten/NIKE_vs_ADIDAS)
 
 ## File descriptions
 * [app.py](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/app.py) - for running trained model
