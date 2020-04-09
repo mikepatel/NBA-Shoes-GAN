@@ -50,18 +50,30 @@ def get_data_gen(dataset):
     # augment dataset using tf.keras.preprocessing.image.ImageDataGenerator
     image_generator = tf.keras.preprocessing.image.ImageDataGenerator(
         rotation_range=30,  # degrees
-        horizontal_flip=True
+        horizontal_flip=True,
+        rescale=1. / 255,
     )
 
     data_gen = image_generator.flow_from_directory(
         directory=os.path.join(os.getcwd(), "data\\") + str(dataset),
         batch_size=BATCH_SIZE,
         shuffle=True,
-        target_size=(64, 64),
+        target_size=(IMAGE_WIDTH, IMAGE_HEIGHT),
         class_mode=None
     )
 
     return data_gen
+
+
+# plot images in a 1x5 grid
+def plotImages(images_arr):
+    fig, axes = plt.subplots(1, 5, figsize=(20, 20))
+    axes = axes.flatten()
+    for img, ax in zip( images_arr, axes):
+        ax.imshow(img)
+        ax.axis('off')
+    plt.tight_layout()
+    plt.show()
 
 
 ################################################################################
@@ -103,4 +115,5 @@ if __name__ == "__main__":
     val_data_gen = get_data_gen(dataset="validation")
     test_data_gen = get_data_gen(dataset="test")
 
-    input_shape = (64, 64, 4)
+    x = next(train_data_gen)
+    plotImages(x[:5])

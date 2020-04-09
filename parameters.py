@@ -11,3 +11,7 @@ File description:
 ################################################################################
 NUM_EPOCHS = 1
 BATCH_SIZE = 16
+
+IMAGE_WIDTH = 512
+IMAGE_HEIGHT = 512
+NUM_CHANNELS = 3
