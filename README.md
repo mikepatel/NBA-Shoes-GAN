@@ -13,6 +13,9 @@ A GAN to create basketball shoe designs using TensorFlow 2.0. Head to the [Hard 
 
 ## Instructions
 ### Train model
+```
+$ python train.py
+```
 
 ### Running model
 
