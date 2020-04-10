@@ -118,7 +118,7 @@ def generate_images(model, epoch, save_dir):
         plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5)
         plt.axis("off")
 
-    fig_name = os.path.join(save_dir, f'Epoch {epoch:04d}')
+    fig_name = os.path.join(save_dir, f'Epoch {epoch:06d}')
     plt.savefig(fig_name)
     plt.close()
 
@@ -129,7 +129,7 @@ def train(train_data_gen, discriminator, generator, d_optimizer, g_optimizer, sa
     valid = np.ones((BATCH_SIZE, 1))
     fake = np.zeros((BATCH_SIZE, 1))
 
-    for e in range(NUM_EPOCHS):
+    for e in range(NUM_EPOCHS+1):
         real_images = next(train_data_gen)
 
         # generate noise
