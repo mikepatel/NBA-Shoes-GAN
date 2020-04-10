@@ -26,6 +26,9 @@ from model import build_discriminator, build_generator
 
 
 ################################################################################
+GEN_INPUT = tf.random.normal(shape=[16, 100])
+
+################################################################################
 # get images
 def get_images(dataset="train"):
     image_files_pattern = os.path.join(os.getcwd(), "data\\") + str(dataset) + "\\*.png"
@@ -78,16 +81,16 @@ def plotImages(images_arr):
 
 # discriminator loss function
 def discriminator_loss(real_output, generated_output):
-    real_loss = tf.keras.losses.BinaryCrossentropy(
-        from_logits=True,
-        y_true=tf.ones_like(real_output),
-        y_pred=real_output
+    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+    real_loss = cross_entropy(
+        tf.ones_like(real_output),
+        real_output
     )
 
-    fake_loss = tf.keras.losses.BinaryCrossentropy(
-        from_logits=True,
-        y_true=tf.zeros_like(generated_output),
-        y_pred=generated_output
+    fake_loss = cross_entropy(
+        tf.zeros_like(generated_output),
+        generated_output
     )
 
     total_loss = real_loss + fake_loss
@@ -96,22 +99,66 @@ def discriminator_loss(real_output, generated_output):
 
 # generator loss function
 def generator_loss(generated_output):
-    generated_loss = tf.keras.losses.BinaryCrossentropy(
-        from_logits=True,
-        y_true=tf.ones_like(generated_output),
-        y_pred=generated_output
+    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+    generated_loss = cross_entropy(
+        tf.ones_like(generated_output),
+        generated_output
     )
 
     return generated_loss
 
 
+# generate and save images
+def generate_images(model, epoch, save_dir):
+    predictions = model(GEN_INPUT)
+
+    for i in range(predictions.shape[0]):
+        plt.subplot(4, 4, i+1)
+        plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5)
+        plt.axis("off")
+
+    fig_name = os.path.join(save_dir, f'Epoch {epoch:04d}')
+    plt.savefig(fig_name)
+    plt.close()
+
+
 # training loop
-def train(train_data_gen, discriminator, generator, gan):
+def train(train_data_gen, discriminator, generator, d_optimizer, g_optimizer, save_dir):
     # adversarial ground truths
     valid = np.ones((BATCH_SIZE, 1))
     fake = np.zeros((BATCH_SIZE, 1))
 
     for e in range(NUM_EPOCHS):
+        real_images = next(train_data_gen)
+
+        # generate noise
+        noise = tf.random.normal(shape=[BATCH_SIZE, 100])
+
+        # GradientTape
+        with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
+            # generator
+            generated_image = generator(noise)
+
+            # discriminator
+            real_output = discriminator(real_images)
+            fake_output = discriminator(generated_image)
+
+            # loss functions
+            g_loss = generator_loss(fake_output)
+            d_loss = discriminator_loss(real_output, fake_output)
+
+        # compute gradients recorded on "tape"
+        g_gradients = g_tape.gradient(g_loss, generator.variables)
+        d_gradients = d_tape.gradient(d_loss, discriminator.variables)
+
+        # apply gradients to model variables to minimize loss function
+        g_optimizer.apply_gradients(zip(g_gradients, generator.variables))
+        d_optimizer.apply_gradients(zip(d_gradients, discriminator.variables))
+
+        generate_images(generator, e, save_dir)
+
+        """
         # input for discriminator
         real_images = next(train_data_gen)
 
@@ -136,6 +183,9 @@ def train(train_data_gen, discriminator, generator, gan):
         print(f'D: {d_loss}')
         print(f'G: {g_loss}')
         print()
+
+        generate_images(generator, e, save_dir)
+        """
 
 
 ################################################################################
@@ -183,13 +233,16 @@ if __name__ == "__main__":
 
     # ----- MODEL ----- #
     discriminator = build_discriminator(input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, NUM_CHANNELS))
+    """
     discriminator.compile(
         loss=tf.keras.losses.binary_crossentropy,
-        optimizer=tf.keras.optimizers.Adam(),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001, beta_1=0.5),
         metrics=["accuracy"]
     )
+    """
 
     generator = build_generator(100)
+    """
     z = tf.keras.layers.Input(shape=(100, ))
     image = generator(z)
 
@@ -199,11 +252,14 @@ if __name__ == "__main__":
     gan = tf.keras.Model(inputs=z, outputs=prediction)
     gan.compile(
         loss=tf.keras.losses.binary_crossentropy,
-        optimizer=tf.keras.optimizers.Adam(),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001, beta_1=0.5),
         metrics=["accuracy"]
     )
+    """
+    d_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001, beta_1=0.5)
+    g_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001, beta_1=0.5)
 
     # ----- TRAINING ----- #
-    train(train_data_gen, discriminator, generator, gan)
+    train(train_data_gen, discriminator, generator, d_optimizer, g_optimizer, output_dir)
 
     # ----- GENERATION ----- #

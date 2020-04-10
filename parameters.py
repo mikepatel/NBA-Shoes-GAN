@@ -9,8 +9,8 @@ File description:
     For model and training parameters
 """
 ################################################################################
-NUM_EPOCHS = 3
-BATCH_SIZE = 16
+NUM_EPOCHS = 500
+BATCH_SIZE = 10
 
 #NOISE_DIM = 100
 DROP_RATE = 0.2
