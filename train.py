@@ -139,23 +139,23 @@ def train(train_data_gen, discriminator, generator, d_optimizer, g_optimizer, sa
         # GradientTape
         with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
             # generator
-            generated_image = generator(noise)
+            generated_image = generator(noise, training=True)
 
             # discriminator
-            real_output = discriminator(real_images)
-            fake_output = discriminator(generated_image)
+            real_output = discriminator(real_images, training=True)
+            fake_output = discriminator(generated_image, training=True)
 
             # loss functions
             g_loss = generator_loss(fake_output)
             d_loss = discriminator_loss(real_output, fake_output)
 
         # compute gradients recorded on "tape"
-        g_gradients = g_tape.gradient(g_loss, generator.variables)
-        d_gradients = d_tape.gradient(d_loss, discriminator.variables)
+        g_gradients = g_tape.gradient(g_loss, generator.trainable_variables)
+        d_gradients = d_tape.gradient(d_loss, discriminator.trainable_variables)
 
         # apply gradients to model variables to minimize loss function
-        g_optimizer.apply_gradients(zip(g_gradients, generator.variables))
-        d_optimizer.apply_gradients(zip(d_gradients, discriminator.variables))
+        g_optimizer.apply_gradients(zip(g_gradients, generator.trainable_variables))
+        d_optimizer.apply_gradients(zip(d_gradients, discriminator.trainable_variables))
 
         generate_images(generator, e, save_dir)
 

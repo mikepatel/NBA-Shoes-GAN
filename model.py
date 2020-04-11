@@ -156,7 +156,8 @@ class Generator(tf.keras.Model):
 
         # Fully connected
         self.fc = tf.keras.layers.Dense(
-            units=64*64*3
+            units=64*64*3,
+            use_bias=False
         )
 
         # Batchnorm 1
@@ -175,7 +176,8 @@ class Generator(tf.keras.Model):
             filters=512,
             kernel_size=(5, 5),
             strides=2,
-            padding="same"
+            padding="same",
+            use_bias=False
         )
 
         # Batchnorm 2
@@ -189,7 +191,8 @@ class Generator(tf.keras.Model):
             filters=128,
             kernel_size=(5, 5),
             strides=2,
-            padding="same"
+            padding="same",
+            use_bias=False
         )
 
         # Batchnorm 3
@@ -203,7 +206,8 @@ class Generator(tf.keras.Model):
             filters=3,
             kernel_size=(5, 5),
             strides=2,
-            padding="same"
+            padding="same",
+            use_bias=False
         )
 
         # Batchnorm 4
