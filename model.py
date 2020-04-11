@@ -67,6 +67,41 @@ def build_discriminator(input_shape):
 
 
 # Generator
+class Generator(tf.keras.Model):
+    def __init__(self):
+        super(Generator, self).__init__()
+
+        # Layer 1
+        self.fc = tf.keras.layers.Dense(
+            units=64*64*64
+        )
+
+        self.batchnorm1 = tf.keras.layers.BatchNormalization()
+
+        # Layer 2
+        self.conv1 = tf.keras.layers.Conv2DTranspose(
+            filters=512,
+            kernel_size=(5, 5),
+            strides=2,
+            padding="same"
+        )
+
+        # Layer 3
+
+        # Layer 4
+
+        # Layer 5
+
+    # forward call
+    def call(self, x, training=True):
+        x = self.fc(x)
+        x = self.batchnorm1(x, training=training)
+        x = tf.keras.layers.LeakyReLU()
+
+        
+
+
+
 def build_generator(noise_dim):
     m = tf.keras.Sequential()
 
@@ -77,7 +112,7 @@ def build_generator(noise_dim):
         activation=tf.keras.activations.relu
     ))
 
-    m.add(tf.keras.layers.BatchNormalization())
+    #m.add(tf.keras.layers.BatchNormalization())
 
     # Layer 2
     m.add(tf.keras.layers.Reshape(
@@ -93,7 +128,7 @@ def build_generator(noise_dim):
         activation=tf.keras.activations.relu
     ))
 
-    m.add(tf.keras.layers.BatchNormalization())
+    #m.add(tf.keras.layers.BatchNormalization())
 
     # Layer 4
     m.add(tf.keras.layers.Conv2DTranspose(
@@ -104,7 +139,7 @@ def build_generator(noise_dim):
         activation=tf.keras.activations.relu
     ))
 
-    m.add(tf.keras.layers.BatchNormalization())
+    #m.add(tf.keras.layers.BatchNormalization())
 
     # Layer 5
     m.add(tf.keras.layers.Conv2DTranspose(
