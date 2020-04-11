@@ -81,11 +81,11 @@ class Discriminator(tf.keras.Model):
             padding="same"
         )
 
-        # Batchnorm
-        self.batchnorm = tf.keras.layers.BatchNormalization()
+        # Batchnorm 1
+        self.batchnorm1 = tf.keras.layers.BatchNormalization()
 
-        # LeakyReLU
-        self.leaky = tf.keras.layers.LeakyReLU()
+        # LeakyReLU 1
+        self.leaky1 = tf.keras.layers.LeakyReLU()
 
         # Conv 2
         self.conv2 = tf.keras.layers.Conv2D(
@@ -95,6 +95,12 @@ class Discriminator(tf.keras.Model):
             padding="Same"
         )
 
+        # Batchnorm 2
+        self.batchnorm2 = tf.keras.layers.BatchNormalization()
+
+        # LeakyReLU 2
+        self.leaky2 = tf.keras.layers.LeakyReLU()
+
         # Conv 3
         self.conv3 = tf.keras.layers.Conv2D(
             filters=128,
@@ -102,6 +108,12 @@ class Discriminator(tf.keras.Model):
             strides=2,
             padding="same"
         )
+
+        # Batchnorm 3
+        self.batchnorm3 = tf.keras.layers.BatchNormalization()
+
+        # LeakyReLU 3
+        self.leaky3 = tf.keras.layers.LeakyReLU()
 
         # Flatten
         self.flatten = tf.keras.layers.Flatten()
@@ -112,21 +124,21 @@ class Discriminator(tf.keras.Model):
         )
 
     # forward call
-    def call(self, x):
+    def call(self, x, training=True):
         # Layer 1: Conv 1
         x = self.conv1(x)
-        x = self.batchnorm(x)
-        x = self.leaky(x)
+        x = self.batchnorm1(x, training=training)
+        x = self.leaky1(x)
 
         # Layer 2: Conv 2
         x = self.conv2(x)
-        x = self.batchnorm(x)
-        x = self.leaky(x)
+        x = self.batchnorm2(x, training=training)
+        x = self.leaky2(x)
 
         # Layer 3: Conv 3
         x = self.conv3(x)
-        x = self.batchnorm(x)
-        x = self.leaky(x)
+        x = self.batchnorm3(x, training=training)
+        x = self.leaky3(x)
 
         # Layer 4: Flatten
         x = self.flatten(x)
@@ -147,11 +159,11 @@ class Generator(tf.keras.Model):
             units=64*64*3
         )
 
-        # Batchnorm
-        self.batchnorm = tf.keras.layers.BatchNormalization()
+        # Batchnorm 1
+        self.batchnorm1 = tf.keras.layers.BatchNormalization()
 
-        # LeakyReLU
-        self.leaky = tf.keras.layers.LeakyReLU()
+        # LeakyReLU 1
+        self.leaky1 = tf.keras.layers.LeakyReLU()
 
         # Reshape
         self.reshape = tf.keras.layers.Reshape(
@@ -166,6 +178,12 @@ class Generator(tf.keras.Model):
             padding="same"
         )
 
+        # Batchnorm 2
+        self.batchnorm2 = tf.keras.layers.BatchNormalization()
+
+        # LeakyReLU 2
+        self.leaky2 = tf.keras.layers.LeakyReLU()
+
         # Conv 2
         self.conv2 = tf.keras.layers.Conv2DTranspose(
             filters=128,
@@ -173,6 +191,12 @@ class Generator(tf.keras.Model):
             strides=2,
             padding="same"
         )
+
+        # Batchnorm 3
+        self.batchnorm3 = tf.keras.layers.BatchNormalization()
+
+        # LeakyReLU 3
+        self.leaky3 = tf.keras.layers.LeakyReLU()
 
         # Conv 3
         self.conv3 = tf.keras.layers.Conv2DTranspose(
@@ -182,29 +206,32 @@ class Generator(tf.keras.Model):
             padding="same"
         )
 
+        # Batchnorm 4
+        self.batchnorm4 = tf.keras.layers.BatchNormalization()
+
     # forward call
     def call(self, x, training=True):
         # Layer 1: Fully connected
         x = self.fc(x)
-        x = self.batchnorm(x, training=training)
-        x = self.leaky(x)
+        x = self.batchnorm1(x, training=training)
+        x = self.leaky1(x)
 
         # Layer 2: Reshape
         x = self.reshape(x)
 
         # Layer 3: Convolution 1
         x = self.conv1(x)
-        x = self.batchnorm(x, training=training)
-        x = self.leaky(x)
+        x = self.batchnorm2(x, training=training)
+        x = self.leaky2(x)
 
         # Layer 4: Convolution 2
         x = self.conv2(x)
-        x = self.batchnorm(x, training=training)
-        x = self.leaky(x)
+        x = self.batchnorm3(x, training=training)
+        x = self.leaky3(x)
 
         # Layer 5: Convolution 3
         x = self.conv3(x)
-        x = self.batchnorm(x, training=training)
+        x = self.batchnorm4(x, training=training)
         x = tf.nn.tanh(x)
 
         return x

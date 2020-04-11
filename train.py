@@ -22,7 +22,8 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from parameters import *
-from model import build_discriminator, build_generator
+#from model import build_discriminator, build_generator
+from model import Discriminator, Generator
 
 
 ################################################################################
@@ -111,7 +112,7 @@ def generator_loss(generated_output):
 
 # generate and save images
 def generate_images(model, epoch, save_dir):
-    predictions = model(GEN_INPUT)
+    predictions = model(GEN_INPUT, training=False)
 
     for i in range(predictions.shape[0]):
         plt.subplot(4, 4, i+1)
@@ -232,7 +233,7 @@ if __name__ == "__main__":
     #plotImages(x[:5])
 
     # ----- MODEL ----- #
-    discriminator = build_discriminator(input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, NUM_CHANNELS))
+    #discriminator = build_discriminator(input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, NUM_CHANNELS))
     """
     discriminator.compile(
         loss=tf.keras.losses.binary_crossentropy,
@@ -241,7 +242,7 @@ if __name__ == "__main__":
     )
     """
 
-    generator = build_generator(100)
+    #generator = build_generator(100)
     """
     z = tf.keras.layers.Input(shape=(100, ))
     image = generator(z)
@@ -256,10 +257,12 @@ if __name__ == "__main__":
         metrics=["accuracy"]
     )
     """
+    d = Discriminator()
+    g = Generator()
     d_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001, beta_1=0.5)
     g_optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001, beta_1=0.5)
 
     # ----- TRAINING ----- #
-    train(train_data_gen, discriminator, generator, d_optimizer, g_optimizer, output_dir)
+    train(train_data_gen, d, g, d_optimizer, g_optimizer, output_dir)
 
     # ----- GENERATION ----- #
