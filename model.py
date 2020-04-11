@@ -16,6 +16,7 @@ from parameters import *
 
 
 ################################################################################
+"""
 # Discriminator
 def build_discriminator(input_shape):
     m = tf.keras.Sequential()
@@ -64,6 +65,76 @@ def build_discriminator(input_shape):
     image = tf.keras.layers.Input(shape=input_shape)
     output = m(image)
     return tf.keras.Model(inputs=image, outputs=output)
+"""
+
+
+# Discriminator
+class Discriminator(tf.keras.Model):
+    def __init__(self):
+        super(Discriminator, self).__init__()
+
+        # Conv 1
+        self.conv1 = tf.keras.layers.Conv2D(
+            filters=32,
+            kernel_size=(5, 5),
+            strides=2,
+            padding="same"
+        )
+
+        # Batchnorm
+        self.batchnorm = tf.keras.layers.BatchNormalization()
+
+        # LeakyReLU
+        self.leaky = tf.keras.layers.LeakyReLU()
+
+        # Conv 2
+        self.conv2 = tf.keras.layers.Conv2D(
+            filters=64,
+            kernel_size=(5, 5),
+            strides=2,
+            padding="Same"
+        )
+
+        # Conv 3
+        self.conv3 = tf.keras.layers.Conv2D(
+            filters=128,
+            kernel_size=(5, 5),
+            strides=2,
+            padding="same"
+        )
+
+        # Flatten
+        self.flatten = tf.keras.layers.Flatten()
+
+        # Fully connected
+        self.fc = tf.keras.layers.Dense(
+            units=1
+        )
+
+    # forward call
+    def call(self, x):
+        # Layer 1: Conv 1
+        x = self.conv1(x)
+        x = self.batchnorm(x)
+        x = self.leaky(x)
+
+        # Layer 2: Conv 2
+        x = self.conv2(x)
+        x = self.batchnorm(x)
+        x = self.leaky(x)
+
+        # Layer 3: Conv 3
+        x = self.conv3(x)
+        x = self.batchnorm(x)
+        x = self.leaky(x)
+
+        # Layer 4: Flatten
+        x = self.flatten(x)
+
+        # Layer 5: Output
+        x = self.fc(x)
+
+        return x
 
 
 # Generator
@@ -76,11 +147,11 @@ class Generator(tf.keras.Model):
             units=64*64*3
         )
 
-        # Batchnorm 1
-        self.batchnorm1 = tf.keras.layers.BatchNormalization()
+        # Batchnorm
+        self.batchnorm = tf.keras.layers.BatchNormalization()
 
-        # LeakyReLU 1
-        self.leaky1 = tf.keras.layers.LeakyReLU()
+        # LeakyReLU
+        self.leaky = tf.keras.layers.LeakyReLU()
 
         # Reshape
         self.reshape = tf.keras.layers.Reshape(
@@ -95,35 +166,57 @@ class Generator(tf.keras.Model):
             padding="same"
         )
 
-        #
+        # Conv 2
+        self.conv2 = tf.keras.layers.Conv2DTranspose(
+            filters=128,
+            kernel_size=(5, 5),
+            strides=2,
+            padding="same"
+        )
 
-        #
+        # Conv 3
+        self.conv3 = tf.keras.layers.Conv2DTranspose(
+            filters=3,
+            kernel_size=(5, 5),
+            strides=2,
+            padding="same"
+        )
 
     # forward call
     def call(self, x, training=True):
         # Layer 1: Fully connected
         x = self.fc(x)
-        x = self.batchnorm1(x, training=training)
-        x = self.leaky1(x)
+        x = self.batchnorm(x, training=training)
+        x = self.leaky(x)
 
         # Layer 2: Reshape
         x = self.reshape(x)
 
         # Layer 3: Convolution 1
+        x = self.conv1(x)
+        x = self.batchnorm(x, training=training)
+        x = self.leaky(x)
 
         # Layer 4: Convolution 2
+        x = self.conv2(x)
+        x = self.batchnorm(x, training=training)
+        x = self.leaky(x)
 
         # Layer 5: Convolution 3
+        x = self.conv3(x)
+        x = self.batchnorm(x, training=training)
+        x = tf.nn.tanh(x)
 
         return x
 
 
+"""
 def build_generator(noise_dim):
     m = tf.keras.Sequential()
 
     # Layer 1
     m.add(tf.keras.layers.Dense(
-        units=64*64*64,
+        units=64*64*3,
         input_dim=noise_dim,
         activation=tf.keras.activations.relu
     ))
@@ -132,7 +225,7 @@ def build_generator(noise_dim):
 
     # Layer 2
     m.add(tf.keras.layers.Reshape(
-        target_shape=(64, 64, 64)
+        target_shape=(64, 64, 3)
     ))
 
     # Layer 3
@@ -171,3 +264,4 @@ def build_generator(noise_dim):
     image = m(z)
 
     return tf.keras.Model(inputs=z, outputs=image)
+"""
