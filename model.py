@@ -73,11 +73,19 @@ class Generator(tf.keras.Model):
 
         # Fully connected
         self.fc = tf.keras.layers.Dense(
-            units=64*64*64
+            units=64*64*3
         )
 
         # Batchnorm 1
         self.batchnorm1 = tf.keras.layers.BatchNormalization()
+
+        # LeakyReLU 1
+        self.leaky1 = tf.keras.layers.LeakyReLU()
+
+        # Reshape
+        self.reshape = tf.keras.layers.Reshape(
+            target_shape=(64, 64, 3)
+        )
 
         # Conv 1
         self.conv1 = tf.keras.layers.Conv2DTranspose(
@@ -96,9 +104,10 @@ class Generator(tf.keras.Model):
         # Layer 1: Fully connected
         x = self.fc(x)
         x = self.batchnorm1(x, training=training)
-        x = tf.keras.layers.LeakyReLU()
+        x = self.leaky1(x)
 
         # Layer 2: Reshape
+        x = self.reshape(x)
 
         # Layer 3: Convolution 1
 
@@ -106,6 +115,7 @@ class Generator(tf.keras.Model):
 
         # Layer 5: Convolution 3
 
+        return x
 
 
 def build_generator(noise_dim):
