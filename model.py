@@ -71,14 +71,15 @@ class Generator(tf.keras.Model):
     def __init__(self):
         super(Generator, self).__init__()
 
-        # Layer 1
+        # Fully connected
         self.fc = tf.keras.layers.Dense(
             units=64*64*64
         )
 
+        # Batchnorm 1
         self.batchnorm1 = tf.keras.layers.BatchNormalization()
 
-        # Layer 2
+        # Conv 1
         self.conv1 = tf.keras.layers.Conv2DTranspose(
             filters=512,
             kernel_size=(5, 5),
@@ -86,19 +87,24 @@ class Generator(tf.keras.Model):
             padding="same"
         )
 
-        # Layer 3
+        #
 
-        # Layer 4
-
-        # Layer 5
+        #
 
     # forward call
     def call(self, x, training=True):
+        # Layer 1: Fully connected
         x = self.fc(x)
         x = self.batchnorm1(x, training=training)
         x = tf.keras.layers.LeakyReLU()
 
-        
+        # Layer 2: Reshape
+
+        # Layer 3: Convolution 1
+
+        # Layer 4: Convolution 2
+
+        # Layer 5: Convolution 3
 
 
 
