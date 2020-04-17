@@ -22,8 +22,8 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from parameters import *
-#from model import build_discriminator, build_generator
-from model import Discriminator, Generator
+from model import build_discriminator, build_generator
+#from model import Discriminator, Generator
 
 
 ################################################################################
@@ -40,7 +40,7 @@ def get_data_gen():
         directory=os.path.join(os.getcwd(), "data"),
         batch_size=BATCH_SIZE,
         shuffle=True,
-        target_size=(512, 512),
+        target_size=(IMAGE_WIDTH, IMAGE_HEIGHT),
         class_mode=None
     )
 
@@ -133,5 +133,10 @@ if __name__ == "__main__":
     """
 
     # ----- MODEL ----- #
+    discriminator = build_discriminator()
+    discriminator.summary()
+
+    generator = build_generator()
+    generator.summary()
 
     # ----- TRAINING ----- #
