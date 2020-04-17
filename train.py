@@ -133,10 +133,21 @@ if __name__ == "__main__":
     """
 
     # ----- MODEL ----- #
+    # discriminator
     discriminator = build_discriminator()
+    discriminator_optimizer = tf.keras.optimizers.Adam(
+        learning_rate=LEARNING_RATE,
+        beta_1=BETA_1
+    )
     discriminator.summary()
 
+    # generator
     generator = build_generator()
+    generator_optimizer = tf.keras.optimizers.Adam(
+        learning_rate=LEARNING_RATE,
+        beta_1=BETA_1
+    )
     generator.summary()
 
     # ----- TRAINING ----- #
+    z_input_gen = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
