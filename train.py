@@ -58,8 +58,8 @@ def plotImages(images_arr):
     plt.show()
 
 
-# discriminator loss function
-def discriminator_loss(real_output, generated_output):
+# discriminaor loss function
+def discriminator_loss(real_output, fake_output):
     cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
     real_loss = cross_entropy(
@@ -68,8 +68,8 @@ def discriminator_loss(real_output, generated_output):
     )
 
     fake_loss = cross_entropy(
-        tf.zeros_like(generated_output),
-        generated_output
+        tf.zeros_like(fake_output),
+        fake_output
     )
 
     total_loss = real_loss + fake_loss
@@ -89,8 +89,8 @@ def generator_loss(generated_output):
 
 
 # generate and save images
-def generate_images(model, epoch, save_dir):
-    predictions = model(GEN_INPUT, training=False)
+def generate_and_save_images(model, epoch, z_input, save_dir):
+    predictions = model(z_input, training=False)
     predictions = predictions[:16]  # generate 16 images
 
     # rescale from [-1, 1] to [0, 1]
@@ -101,14 +101,51 @@ def generate_images(model, epoch, save_dir):
         plt.imshow(predictions[i])
         plt.axis("off")
 
-    fig_name = os.path.join(save_dir, f'Epoch {epoch:06d}')
+    fig_name = os.path.join(save_dir, f'Epoch {epoch: 05d}')
     plt.savefig(fig_name)
     plt.close()
 
 
 # training loop
-def train(train_data_gen, discriminator, generator, d_optimizer, g_optimizer, save_dir):
-    print()
+def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
+    for e in range(NUM_EPOCHS):
+
+        # get a batch
+        num_batches = len(dataset)
+        for i in range(num_batches):
+            batch = dataset[i]
+
+            # generate noise input
+            noise = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+
+            # GradientTape
+            with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
+                # generator
+                fake_batch = g(noise, training=True)
+
+                # discriminator
+                real_output = d(batch, training=True)
+                fake_output = d(fake_batch, training=True)
+
+                # loss functions
+                g_loss = generator_loss(fake_output)
+                d_loss = discriminator_loss(real_output, fake_output)
+
+            # compute gradients recorded on "tape"
+            g_gradients = g_tape.gradient(g_loss, g.trainable_variables)
+            d_gradients = d_tape.gradient(d_loss, d.trainable_variables)
+
+            # apply gradients to model variables to minimize loss function
+            g_optimizer.apply_gradients(zip(g_gradients, g.trainable_variables))
+            d_optimizer.apply_gradients(zip(d_gradients, d.trainable_variables))
+
+        # generate sample output
+        generate_and_save_images(
+            model=g,
+            epoch=e+1,
+            z_input=z_input,
+            save_dir=save_dir
+        )
 
 
 ################################################################################
@@ -151,3 +188,13 @@ if __name__ == "__main__":
 
     # ----- TRAINING ----- #
     z_input_gen = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+
+    train(
+        dataset=train_data_gen,
+        d=discriminator,
+        g=generator,
+        d_optimizer=discriminator_optimizer,
+        g_optimizer=generator_optimizer,
+        z_input=z_input_gen,
+        save_dir=output_dir
+    )
