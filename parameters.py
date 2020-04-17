@@ -10,11 +10,13 @@ File description:
 """
 ################################################################################
 NUM_EPOCHS = 200
-BATCH_SIZE = 10
+BATCH_SIZE = 20
 
-#NOISE_DIM = 100
+NOISE_DIM = 100
 DROP_RATE = 0.2
 
-IMAGE_WIDTH = 512
-IMAGE_HEIGHT = 512
-NUM_CHANNELS = 3
+LEARNING_RATE = 0.0001
+BETA_1 = 0.9  # 0.5
+
+LEAKY_ALPHA = 0.3  # default is 0.3
+DROPOUT_RATE = 0.3

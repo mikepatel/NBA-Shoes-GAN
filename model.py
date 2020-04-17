@@ -173,7 +173,7 @@ class Generator(tf.keras.Model):
 
         # Conv 1
         self.conv1 = tf.keras.layers.Conv2DTranspose(
-            filters=512,
+            filters=128,
             kernel_size=(5, 5),
             strides=2,
             padding="same",
@@ -188,7 +188,7 @@ class Generator(tf.keras.Model):
 
         # Conv 2
         self.conv2 = tf.keras.layers.Conv2DTranspose(
-            filters=128,
+            filters=64,
             kernel_size=(5, 5),
             strides=2,
             padding="same",
