@@ -101,7 +101,7 @@ def generate_and_save_images(model, epoch, z_input, save_dir):
         plt.imshow(predictions[i])
         plt.axis("off")
 
-    fig_name = os.path.join(save_dir, f'Epoch {epoch: 05d}')
+    fig_name = os.path.join(save_dir, f'Epoch {epoch:05d}')
     plt.savefig(fig_name)
     plt.close()
 
