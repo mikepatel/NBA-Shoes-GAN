@@ -21,4 +21,5 @@ $ python train.py
 ### Running model
 
 ## Results
+![2000 epochs](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/training.gif)
 
