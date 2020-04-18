@@ -7,6 +7,7 @@ A GAN to create basketball shoe designs using TensorFlow 2.0. Head to the [Hard 
 
 ## File descriptions
 * [app.py](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/app.py) - for running trained model
+* [make_gif.py](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/make_gif.py) - for making a gif of training images
 * [model.py](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/model.py) - for model definitions
 * [parameters.py](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/parameters.py) - for model and training parameters
 * [train.py](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/train.py) - for model preprocessing and training
