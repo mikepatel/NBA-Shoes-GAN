@@ -78,6 +78,7 @@ def build_discriminator():
     return m
 
 
+# Generator
 def build_generator():
     m = tf.keras.Sequential()
 
