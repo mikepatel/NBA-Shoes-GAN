@@ -139,13 +139,14 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
             g_optimizer.apply_gradients(zip(g_gradients, g.trainable_variables))
             d_optimizer.apply_gradients(zip(d_gradients, d.trainable_variables))
 
-        # generate sample output
-        generate_and_save_images(
-            model=g,
-            epoch=e+1,
-            z_input=z_input,
-            save_dir=save_dir
-        )
+        if e % 100 == 0 or e == NUM_EPOCHS-1:
+            # generate sample output
+            generate_and_save_images(
+                model=g,
+                epoch=e+1,
+                z_input=z_input,
+                save_dir=save_dir
+            )
 
 
 ################################################################################

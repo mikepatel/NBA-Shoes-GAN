@@ -81,7 +81,7 @@ def build_discriminator():
 def build_generator():
     m = tf.keras.Sequential()
 
-    # Layer 1: Fully connected
+    # Layer: Fully connected
     m.add(tf.keras.layers.Dense(
         units=4*4*512,
         input_shape=(NOISE_DIM, ),
@@ -90,12 +90,22 @@ def build_generator():
     m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
 
-    # Layer 2: Reshape
+    # Layer: Reshape
     m.add(tf.keras.layers.Reshape(
         target_shape=(4, 4, 512)
     ))
 
-    # Layer 3: Conv: 8x8x256
+    # Layer: Conv: 4x4x512
+    m.add(tf.keras.layers.Conv2D(
+        filters=512,
+        kernel_size=(3, 3),
+        strides=1,
+        padding="same"
+    ))
+    m.add(tf.keras.layers.BatchNormalization())
+    m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
+
+    # Layer: Conv: 8x8x256
     m.add(tf.keras.layers.Conv2DTranspose(
         filters=256,
         kernel_size=(3, 3),
@@ -105,7 +115,7 @@ def build_generator():
     m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
 
-    # Layer 4: Conv: 16x16x128
+    # Layer: Conv: 16x16x128
     m.add(tf.keras.layers.Conv2DTranspose(
         filters=128,
         kernel_size=(3, 3),
@@ -115,7 +125,7 @@ def build_generator():
     m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
 
-    # Layer 5: Conv: 32x32x64
+    # Layer: Conv: 32x32x64
     m.add(tf.keras.layers.Conv2DTranspose(
         filters=64,
         kernel_size=(3, 3),
@@ -125,7 +135,7 @@ def build_generator():
     m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
 
-    # Layer 6: Conv: 64x64x3
+    # Layer: Conv: 64x64x3
     m.add(tf.keras.layers.Conv2DTranspose(
         filters=3,  # RGB
         kernel_size=(3, 3),

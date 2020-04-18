@@ -10,13 +10,12 @@ File description:
 """
 ################################################################################
 NUM_EPOCHS = 2000
-BATCH_SIZE = 20
+BATCH_SIZE = 20  # 35
 
 NOISE_DIM = 100
-DROP_RATE = 0.2
 
 LEARNING_RATE = 0.0001
-BETA_1 = 0.9  # 0.5
+BETA_1 = 0.5  # 0.9
 
 LEAKY_ALPHA = 0.3  # default is 0.3
 DROPOUT_RATE = 0.3
