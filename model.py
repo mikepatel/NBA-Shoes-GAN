@@ -84,7 +84,7 @@ def build_generator():
 
     # Layer: Fully connected
     m.add(tf.keras.layers.Dense(
-        units=8*8*1024,
+        units=4*4*1024,
         input_shape=(NOISE_DIM, ),
         use_bias=False
     ))
@@ -93,7 +93,7 @@ def build_generator():
 
     # Layer: Reshape
     m.add(tf.keras.layers.Reshape(
-        target_shape=(8, 8, 1024)
+        target_shape=(4, 4, 1024)
     ))
 
     # Layer: Conv: 8x8x1024
