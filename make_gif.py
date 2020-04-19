@@ -20,7 +20,7 @@ import imageio
 if __name__ == "__main__":
     # ----- VISUALIZATION ----- #
     results_dir = input("Enter images directory: ")
-    gif_filename = os.path.join(os.getcwd(), "training.gif")
+    gif_filename = os.path.join(os.getcwd(), "results\\training.gif")
 
     # get all images
     image_files_pattern = results_dir + "\\*.png"

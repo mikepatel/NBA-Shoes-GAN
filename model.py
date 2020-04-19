@@ -23,7 +23,7 @@ def build_discriminator():
     # Layer: Conv: 32x32x64
     m.add(tf.keras.layers.Conv2D(
         filters=64,
-        kernel_size=(3, 3),
+        kernel_size=(5, 5),
         strides=2,
         input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, NUM_CHANNELS),
         padding="same"
@@ -34,7 +34,7 @@ def build_discriminator():
     # Layer: Conv 16x16x128
     m.add(tf.keras.layers.Conv2D(
         filters=128,
-        kernel_size=(3, 3),
+        kernel_size=(5, 5),
         strides=2,
         padding="same"
     ))
@@ -47,7 +47,7 @@ def build_discriminator():
     # Layer: Conv: 8x8x256
     m.add(tf.keras.layers.Conv2D(
         filters=256,
-        kernel_size=(3, 3),
+        kernel_size=(5, 5),
         strides=2,
         padding="same"
     ))
@@ -57,7 +57,7 @@ def build_discriminator():
     # Layer: Conv: 4x4x512
     m.add(tf.keras.layers.Conv2D(
         filters=512,
-        kernel_size=(3, 3),
+        kernel_size=(5, 5),
         strides=2,
         padding="same"
     ))
@@ -99,7 +99,7 @@ def build_generator():
     # Layer: Conv: 8x8x1024
     m.add(tf.keras.layers.Conv2D(
         filters=1024,
-        kernel_size=(3, 3),
+        kernel_size=(5, 5),
         strides=1,
         padding="same"
     ))
@@ -109,7 +109,7 @@ def build_generator():
     # Layer: Conv: 4x4x1024
     m.add(tf.keras.layers.Conv2D(
         filters=1024,
-        kernel_size=(3, 3),
+        kernel_size=(5, 5),
         strides=2,
         padding="same"
     ))
@@ -119,7 +119,7 @@ def build_generator():
     # Layer: Conv: 8x8x1024
     m.add(tf.keras.layers.Conv2DTranspose(
         filters=1024,
-        kernel_size=(3, 3),
+        kernel_size=(5, 5),
         strides=2,
         padding="same"
     ))
@@ -129,7 +129,7 @@ def build_generator():
     # Layer: Conv: 16x16x512
     m.add(tf.keras.layers.Conv2DTranspose(
         filters=512,
-        kernel_size=(3, 3),
+        kernel_size=(5, 5),
         strides=2,
         padding="same"
     ))
@@ -139,7 +139,7 @@ def build_generator():
     # Layer: Conv: 32x32x256
     m.add(tf.keras.layers.Conv2DTranspose(
         filters=256,
-        kernel_size=(3, 3),
+        kernel_size=(5, 5),
         strides=2,
         padding="same"
     ))
