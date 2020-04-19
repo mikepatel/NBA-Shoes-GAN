@@ -15,7 +15,7 @@ BATCH_SIZE = 20  # 35
 NOISE_DIM = 100
 
 LEARNING_RATE = 0.0001
-BETA_1 = 0.5  # 0.9
+BETA_1 = 0.9  # 0.5
 
 LEAKY_ALPHA = 0.3  # default is 0.3
 DROPOUT_RATE = 0.3
