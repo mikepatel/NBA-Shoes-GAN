@@ -97,26 +97,6 @@ def build_generator():
     ))
 
     # Layer: Conv: 8x8x1024
-    m.add(tf.keras.layers.Conv2D(
-        filters=1024,
-        kernel_size=(5, 5),
-        strides=1,
-        padding="same"
-    ))
-    m.add(tf.keras.layers.BatchNormalization())
-    m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    # Layer: Conv: 4x4x1024
-    m.add(tf.keras.layers.Conv2D(
-        filters=1024,
-        kernel_size=(5, 5),
-        strides=2,
-        padding="same"
-    ))
-    m.add(tf.keras.layers.BatchNormalization())
-    m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    # Layer: Conv: 8x8x1024
     m.add(tf.keras.layers.Conv2DTranspose(
         filters=1024,
         kernel_size=(5, 5),
