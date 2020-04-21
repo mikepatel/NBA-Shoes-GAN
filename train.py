@@ -108,6 +108,15 @@ def generate_and_save_images(model, epoch, z_input, save_dir):
 
 # training loop
 def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
+    # labels
+    valid_labels = np.ones((BATCH_SIZE, 1))
+    fake_labels = np.zeros((BATCH_SIZE, 1))
+
+    # training metrics
+    d_train_loss = tf.keras.metrics.Mean("d_train_loss", dtype=tf.float32)
+    g_train_loss = tf.keras.metrics.Mean("g_train_loss", dtype=tf.float32)
+    train_summary_writer = tf.summary.create_file_writer(save_dir)
+
     for e in range(NUM_EPOCHS):
 
         # get a batch
@@ -139,7 +148,15 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
             g_optimizer.apply_gradients(zip(g_gradients, g.trainable_variables))
             d_optimizer.apply_gradients(zip(d_gradients, d.trainable_variables))
 
+            d_train_loss(d_loss)
+            g_train_loss(g_loss)
+
         if e % 250 == 0 or e == NUM_EPOCHS-1:
+            # metrics
+            with train_summary_writer.as_default():
+                tf.summary.scalar("d_loss", d_train_loss.result(), step=e)
+                tf.summary.scalar("g_loss", g_train_loss.result(), step=e)
+
             # generate sample output
             generate_and_save_images(
                 model=g,
@@ -147,6 +164,10 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
                 z_input=z_input,
                 save_dir=save_dir
             )
+
+        # reset metrics every epoch
+        d_train_loss.reset_states()
+        g_train_loss.reset_states()
 
 
 ################################################################################
