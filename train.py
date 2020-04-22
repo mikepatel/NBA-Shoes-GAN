@@ -76,6 +76,25 @@ def discriminator_loss(real_output, fake_output):
     return total_loss
 
 
+# discriminator flip loss function
+# flip labels
+def discriminator_flip_loss(real_output, fake_output):
+    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+    real_loss = cross_entropy(
+        tf.zeros_like(real_output),
+        real_output
+    )
+
+    fake_loss = cross_entropy(
+        tf.ones_like(fake_output),
+        fake_output
+    )
+
+    total_loss = real_loss + fake_loss
+    return total_loss
+
+
 # generator loss function
 def generator_loss(generated_output):
     cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
@@ -138,7 +157,12 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
 
                 # loss functions
                 g_loss = generator_loss(fake_output)
-                d_loss = discriminator_loss(real_output, fake_output)
+
+                # flip labels in the early training
+                if e < 500:
+                    d_loss = discriminator_flip_loss(real_output, fake_output)
+                else:
+                    d_loss = discriminator_loss(real_output, fake_output)
 
             # compute gradients recorded on "tape"
             g_gradients = g_tape.gradient(g_loss, g.trainable_variables)
