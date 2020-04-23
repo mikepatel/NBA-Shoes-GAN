@@ -159,10 +159,13 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
                 g_loss = generator_loss(fake_output)
 
                 # flip labels in the early training
+                """
                 if e < 50:
                     d_loss = discriminator_flip_loss(real_output, fake_output)
                 else:
                     d_loss = discriminator_loss(real_output, fake_output)
+                """
+                d_loss = discriminator_loss(real_output, fake_output)
 
             # compute gradients recorded on "tape"
             g_gradients = g_tape.gradient(g_loss, g.trainable_variables)
@@ -185,7 +188,7 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
                 save_dir=save_dir
             )
 
-        # metrics
+        # write loss metrics to TensorBoard
         with train_summary_writer.as_default():
             tf.summary.scalar("d_loss", d_train_loss.result(), step=e)
             tf.summary.scalar("g_loss", g_train_loss.result(), step=e)

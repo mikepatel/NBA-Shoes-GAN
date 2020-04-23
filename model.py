@@ -28,7 +28,7 @@ def build_discriminator():
         input_shape=(IMAGE_WIDTH, IMAGE_HEIGHT, NUM_CHANNELS),
         padding="same"
     ))
-    #m.add(tf.keras.layers.BatchNormalization())
+    m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
 
     # Layer: Conv 16x16x128
@@ -38,7 +38,7 @@ def build_discriminator():
         strides=2,
         padding="same"
     ))
-    #m.add(tf.keras.layers.BatchNormalization())
+    m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
 
     # Layer: Dropout
@@ -51,7 +51,7 @@ def build_discriminator():
         strides=2,
         padding="same"
     ))
-    #m.add(tf.keras.layers.BatchNormalization())
+    m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
 
     # Layer: Conv: 4x4x512
@@ -61,7 +61,7 @@ def build_discriminator():
         strides=2,
         padding="same"
     ))
-    #m.add(tf.keras.layers.BatchNormalization())
+    m.add(tf.keras.layers.BatchNormalization())
     m.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
 
     # Layer: Dropout
