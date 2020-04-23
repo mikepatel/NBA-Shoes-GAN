@@ -176,10 +176,6 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
             g_train_loss(g_loss)
 
         if e % 250 == 0 or e == NUM_EPOCHS-1:
-            # metrics
-            with train_summary_writer.as_default():
-                tf.summary.scalar("d_loss", d_train_loss.result(), step=e)
-                tf.summary.scalar("g_loss", g_train_loss.result(), step=e)
 
             # generate sample output
             generate_and_save_images(
@@ -188,6 +184,11 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
                 z_input=z_input,
                 save_dir=save_dir
             )
+
+        # metrics
+        with train_summary_writer.as_default():
+            tf.summary.scalar("d_loss", d_train_loss.result(), step=e)
+            tf.summary.scalar("g_loss", g_train_loss.result(), step=e)
 
         # reset metrics every epoch
         d_train_loss.reset_states()
