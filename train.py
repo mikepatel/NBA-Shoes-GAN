@@ -159,7 +159,7 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
                 g_loss = generator_loss(fake_output)
 
                 # flip labels in the early training
-                if e < 500:
+                if e < 150:
                     d_loss = discriminator_flip_loss(real_output, fake_output)
                 else:
                     d_loss = discriminator_loss(real_output, fake_output)
