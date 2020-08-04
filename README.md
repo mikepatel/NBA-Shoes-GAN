@@ -1,4 +1,5 @@
 # NBA-Shoes-GAN
+**UNDER REVISION**
 ## Overview
 A GAN to create basketball shoe designs using TensorFlow 2.0. Head to the [Hard in the Paint NBA Podcast](https://podcasts.google.com/?feed=aHR0cDovL2ZlZWRzLnNvdW5kY2xvdWQuY29tL3VzZXJzL3NvdW5kY2xvdWQ6dXNlcnM6NDUxMzEwODY1L3NvdW5kcy5yc3M&ved=0CAAQ4aUDahcKEwiYurOIh9roAhUAAAAAHQAAAAAQCg) to hear discussions regarding the GAN's results
 
