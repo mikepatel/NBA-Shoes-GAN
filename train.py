@@ -10,43 +10,11 @@ File description:
 """
 ################################################################################
 # Imports
-import os
-import numpy as np
-from datetime import datetime
-import glob
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
-import matplotlib.pyplot as plt
-
-import tensorflow as tf
-
 from parameters import *
 from model import build_discriminator, build_generator
-#from model import Discriminator, Generator
 
 
 ################################################################################
-# get data generator
-def get_data_gen():
-    # augment dataset using tf.keras.preprocessing.image.ImageDataGenerator
-    image_generator = tf.keras.preprocessing.image.ImageDataGenerator(
-        rotation_range=30,  # degrees
-        horizontal_flip=True,
-        rescale=1. / 255,
-    )
-
-    data_gen = image_generator.flow_from_directory(
-        directory=os.path.join(os.getcwd(), "data"),
-        batch_size=BATCH_SIZE,
-        shuffle=True,
-        target_size=(IMAGE_WIDTH, IMAGE_HEIGHT),
-        class_mode=None
-    )
-
-    return data_gen
-
-
 # plot images in a 1x5 grid
 def plotImages(images_arr):
     fig, axes = plt.subplots(1, 5, figsize=(20, 20))
@@ -69,25 +37,6 @@ def discriminator_loss(real_output, fake_output):
 
     fake_loss = cross_entropy(
         tf.zeros_like(fake_output),
-        fake_output
-    )
-
-    total_loss = real_loss + fake_loss
-    return total_loss
-
-
-# discriminator flip loss function
-# flip labels
-def discriminator_flip_loss(real_output, fake_output):
-    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
-
-    real_loss = cross_entropy(
-        tf.zeros_like(real_output),
-        real_output
-    )
-
-    fake_loss = cross_entropy(
-        tf.ones_like(fake_output),
         fake_output
     )
 
@@ -127,17 +76,12 @@ def generate_and_save_images(model, epoch, z_input, save_dir):
 
 # training loop
 def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
-    # labels
-    valid_labels = np.ones((BATCH_SIZE, 1))
-    fake_labels = np.zeros((BATCH_SIZE, 1))
-
     # training metrics
     d_train_loss = tf.keras.metrics.Mean("d_train_loss", dtype=tf.float32)
     g_train_loss = tf.keras.metrics.Mean("g_train_loss", dtype=tf.float32)
     train_summary_writer = tf.summary.create_file_writer(save_dir)
 
     for e in range(NUM_EPOCHS):
-
         # get a batch
         num_batches = len(dataset)
         for i in range(num_batches):
@@ -157,14 +101,6 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
 
                 # loss functions
                 g_loss = generator_loss(fake_output)
-
-                # flip labels in the early training
-                """
-                if e < 50:
-                    d_loss = discriminator_flip_loss(real_output, fake_output)
-                else:
-                    d_loss = discriminator_loss(real_output, fake_output)
-                """
                 d_loss = discriminator_loss(real_output, fake_output)
 
             # compute gradients recorded on "tape"
@@ -179,7 +115,6 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
             g_train_loss(g_loss)
 
         if e % 250 == 0 or e == NUM_EPOCHS-1:
-
             # generate sample output
             generate_and_save_images(
                 model=g,
@@ -211,7 +146,22 @@ if __name__ == "__main__":
 
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
-    train_data_gen = get_data_gen()
+    # augment dataset using tf.keras.preprocessing.image.ImageDataGenerator
+    image_generator = tf.keras.preprocessing.image.ImageDataGenerator(
+        # rotation_range=30,  # degrees
+        horizontal_flip=True,
+        channel_shift_range=80.0,
+        rescale=1./255,
+    )
+
+    train_data_gen = image_generator.flow_from_directory(
+        directory=DATA_DIR,
+        target_size=(IMAGE_WIDTH, IMAGE_HEIGHT),
+        batch_size=BATCH_SIZE,
+        class_mode=None,
+        shuffle=True
+        #save_to_dir=TEMP_DIR
+    )
 
     """
     x = next(train_data_gen)
@@ -222,21 +172,15 @@ if __name__ == "__main__":
     # ----- MODEL ----- #
     # discriminator
     discriminator = build_discriminator()
-    discriminator_optimizer = tf.keras.optimizers.Adam(
-        learning_rate=LEARNING_RATE,
-        beta_1=BETA_1
-    )
+    discriminator_optimizer = tf.keras.optimizers.Adam()
     discriminator.summary()
 
     # generator
     generator = build_generator()
-    generator_optimizer = tf.keras.optimizers.Adam(
-        learning_rate=LEARNING_RATE,
-        beta_1=BETA_1
-    )
+    generator_optimizer = tf.keras.optimizers.Adam()
     generator.summary()
 
-    # ----- TRAINING ----- #
+    # ----- TRAIN ----- #
     z_input_gen = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
 
     train(
