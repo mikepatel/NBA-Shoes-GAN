@@ -16,7 +16,13 @@ from parameters import *
 ################################################################################
 # Discriminator
 def build_discriminator():
-    m = tf.keras.Sequential()
+    model = tf.keras.Sequential()
+
+    # Input
+    model.add(tf.keras.layers.Input(
+        
+    ))
+
 
     # Layer: Conv: 32x32x64
     m.add(tf.keras.layers.Conv2D(
