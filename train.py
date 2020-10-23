@@ -16,7 +16,7 @@ from model import build_discriminator, build_generator
 
 ################################################################################
 # plot images in a 1x5 grid
-def plotImages(images_arr):
+def plot_images(images_arr):
     fig, axes = plt.subplots(1, 5, figsize=(20, 20))
     axes = axes.flatten()
     for img, ax in zip( images_arr, axes):
@@ -139,11 +139,6 @@ if __name__ == "__main__":
     # print TF version
     print(f'TF version: {tf.__version__}')
 
-    # create output directory for results
-    output_dir = "results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
     # augment dataset using tf.keras.preprocessing.image.ImageDataGenerator
@@ -180,7 +175,14 @@ if __name__ == "__main__":
     generator_optimizer = tf.keras.optimizers.Adam()
     generator.summary()
 
+    quit()
+
     # ----- TRAIN ----- #
+    # create output directory for results
+    output_dir = "results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     z_input_gen = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
 
     train(
