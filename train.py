@@ -175,8 +175,6 @@ if __name__ == "__main__":
     generator_optimizer = tf.keras.optimizers.Adam()
     generator.summary()
 
-    quit()
-
     # ----- TRAIN ----- #
     # create output directory for results
     output_dir = "results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
