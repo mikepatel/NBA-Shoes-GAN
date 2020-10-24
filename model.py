@@ -23,6 +23,28 @@ def build_discriminator():
         shape=(IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_CHANNELS)
     ))
 
+    # Conv 64 128x128
+    model.add(tf.keras.layers.Conv2D(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=1,
+        padding="same"
+    ))
+
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
+
+    # Conv 64 64x64
+    model.add(tf.keras.layers.Conv2D(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=2,
+        padding="same"
+    ))
+
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
+
     # Conv 64 64x64
     model.add(tf.keras.layers.Conv2D(
         filters=64,
@@ -200,7 +222,18 @@ def build_generator():
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
 
-    # Output 64x64x3
+    # Conv 64 128x128
+    model.add(tf.keras.layers.Conv2DTranspose(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=2,
+        padding="same"
+    ))
+
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
+
+    # Output 128x128x3
     model.add(tf.keras.layers.Conv2DTranspose(
         filters=3,  # RGB
         kernel_size=(3, 3),
