@@ -118,7 +118,7 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
             # generate sample output
             generate_and_save_images(
                 model=g,
-                epoch=e+1,
+                epoch=e,
                 z_input=z_input,
                 save_dir=save_dir
             )
