@@ -151,7 +151,7 @@ if __name__ == "__main__":
 
     train_data_gen = image_generator.flow_from_directory(
         directory=DATA_DIR,
-        target_size=(IMAGE_WIDTH, IMAGE_HEIGHT),
+        target_size=(256, 256),
         batch_size=BATCH_SIZE,
         class_mode=None,
         shuffle=True
