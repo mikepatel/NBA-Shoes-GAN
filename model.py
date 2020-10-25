@@ -135,111 +135,30 @@ def build_discriminator():
 
 ################################################################################
 # Generator
+# will use skip connections
 def build_generator():
-    model = tf.keras.Sequential()
+    # will try Functional API of Model first, otherwise will sub-class Model
 
     # Input
-    model.add(tf.keras.layers.Input(
-        shape=(NOISE_DIM, )
-    ))
+    inputs = tf.keras.layers.Input(
+        shape=(64, 64, 3)
+    )
 
-    # Fully connected
-    model.add(tf.keras.layers.Dense(
-        units=2*2*256
-    ))
+    x = inputs
 
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    # Reshape
-    model.add(tf.keras.layers.Reshape(
-        target_shape=(2, 2, 256)
-    ))
-
-    # Conv 256 2x2
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=256,
-        kernel_size=(3, 3),
-        strides=1,
-        padding="same"
-    ))
-
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    # Conv 64 4x4
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    # Conv 64 8x8
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    # Conv 64 16x16
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    # Conv 64 32x32
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    # Conv 64 64x64
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    # Conv 64 128x128
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    # Output 128x128x3
-    model.add(tf.keras.layers.Conv2DTranspose(
+    # Output
+    outputs = tf.keras.layers.Conv2D(
         filters=3,  # RGB
         kernel_size=(3, 3),
         strides=1,
         padding="same",
         activation=tf.keras.activations.tanh
-    ))
+    )(x)
+
+    # create model
+    model = tf.keras.Model(
+        inputs=inputs,
+        outputs=outputs
+    )
 
     return model

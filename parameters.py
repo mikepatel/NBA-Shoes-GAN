@@ -25,7 +25,7 @@ import tensorflow as tf
 ################################################################################
 # training parameters
 NUM_EPOCHS = 20000
-BATCH_SIZE = 20  # 35
+BATCH_SIZE = 35  # 35
 LEARNING_RATE = 0.0001
 BETA_1 = 0.9  # 0.5
 
@@ -34,9 +34,9 @@ NOISE_DIM = 100
 LEAKY_ALPHA = 0.3  # default is 0.3
 
 # image dimensions
-IMAGE_WIDTH = 128
-IMAGE_HEIGHT = 128
-IMAGE_CHANNELS = 3
+#IMAGE_WIDTH = 128
+#IMAGE_HEIGHT = 128
+#IMAGE_CHANNELS = 3
 
 # directories
 DATA_DIR = os.path.join(os.getcwd(), "data")

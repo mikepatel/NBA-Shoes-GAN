@@ -82,7 +82,7 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
     train_summary_writer = tf.summary.create_file_writer(save_dir)
 
     for e in range(NUM_EPOCHS):
-        # get a batch
+        # get a batch // separate batches for G and D
         num_batches = len(dataset)
         for i in range(num_batches):
             batch = dataset[i]
@@ -145,7 +145,7 @@ if __name__ == "__main__":
     image_generator = tf.keras.preprocessing.image.ImageDataGenerator(
         # rotation_range=30,  # degrees
         horizontal_flip=True,
-        channel_shift_range=80.0,
+        #channel_shift_range=80.0,
         rescale=1./255,
     )
 
@@ -167,13 +167,21 @@ if __name__ == "__main__":
     # ----- MODEL ----- #
     # discriminator
     discriminator = build_discriminator()
-    discriminator_optimizer = tf.keras.optimizers.Adam()
+    discriminator_optimizer = tf.keras.optimizers.Adam(
+        learning_rate=LEARNING_RATE,
+        beta_1=BETA_1
+    )
     discriminator.summary()
 
     # generator
     generator = build_generator()
-    generator_optimizer = tf.keras.optimizers.Adam()
+    generator_optimizer = tf.keras.optimizers.Adam(
+        learning_rate=LEARNING_RATE,
+        beta_1=BETA_1
+    )
     generator.summary()
+
+    quit()
 
     # ----- TRAIN ----- #
     # create output directory for results
