@@ -155,7 +155,18 @@ def build_generator():
         shape=(64, 64, 3)  # low resolution
     )
 
-    x = inputs
+    # Conv
+
+    # skip connection
+
+    # residual blocks
+
+    # Conv
+    # add skip
+
+    # Conv / Upsample
+
+    # Conv / Upsample
 
     # Output
     outputs = tf.keras.layers.Conv2D(
