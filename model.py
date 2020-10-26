@@ -149,20 +149,41 @@ def build_generator():
         return t
 
     # will try Functional API of Model first, otherwise will sub-class Model
-
     # Input
     inputs = tf.keras.layers.Input(
         shape=(64, 64, 3)  # low resolution
     )
 
+    x = inputs
+
     # Conv
+    x = tf.keras.layers.Conv2D(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=1,
+        padding="same"
+    )(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.ReLU()(x)
 
     # skip connection
+    skip = x
 
     # residual blocks
+    for i in range(8):
+        x = build_residual_block(x)
 
     # Conv
+    x = tf.keras.layers.Conv2D(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=1,
+        padding="same"
+    )(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+
     # add skip
+    x = x + skip
 
     # Conv / Upsample
 
