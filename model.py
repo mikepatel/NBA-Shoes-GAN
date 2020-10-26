@@ -127,8 +127,26 @@ def build_discriminator():
 # will use skip connections
 def build_generator():
     # residual block
-    #def build_residual_block():
+    def build_residual_block(t):
+        skip = t  # skip connection
+        t = tf.keras.layers.Conv2D(
+            filters=64,
+            kernel_size=(3, 3),
+            strides=1,
+            padding="same"
+        )(t)
+        t = tf.keras.layers.BatchNormalization()(t)
+        t = tf.keras.layers.ReLU()(t)
+        t = tf.keras.layers.Conv2D(
+            filters=64,
+            kernel_size=(3, 3),
+            strides=1,
+            padding="same"
+        )(t)
+        t = tf.keras.layers.BatchNormalization()(t)
+        t = t + skip
 
+        return t
 
     # will try Functional API of Model first, otherwise will sub-class Model
 
