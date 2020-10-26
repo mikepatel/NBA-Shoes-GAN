@@ -128,7 +128,7 @@ def build_discriminator():
 def build_generator():
     # residual block
     def build_residual_block(t):
-        skip = t  # skip connection
+        residual = t  # skip connection
         t = tf.keras.layers.Conv2D(
             filters=64,
             kernel_size=(3, 3),
@@ -144,7 +144,7 @@ def build_generator():
             padding="same"
         )(t)
         t = tf.keras.layers.BatchNormalization()(t)
-        t = t + skip
+        t = t + residual
 
         return t
 
