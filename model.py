@@ -170,7 +170,7 @@ def build_generator():
     skip = x
 
     # residual blocks
-    for i in range(8):
+    for i in range(16):
         x = build_residual_block(x)
 
     # Conv
