@@ -186,8 +186,24 @@ def build_generator():
     x = x + skip
 
     # Conv / Upsample
+    x = tf.keras.layers.Conv2DTranspose(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=2,
+        padding="same"
+    )(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.ReLU()(x)
 
     # Conv / Upsample
+    x = tf.keras.layers.Conv2DTranspose(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=2,
+        padding="same"
+    )(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.ReLU()(x)
 
     # Output
     outputs = tf.keras.layers.Conv2D(
