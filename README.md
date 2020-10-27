@@ -6,8 +6,12 @@ A GAN to create basketball shoe designs using TensorFlow 2.0. Head to the [Hard 
 ## Data
 * Data set courtesy of [CShorten](https://github.com/CShorten/NIKE_vs_ADIDAS)
 
+## Environment
+* Python 3.7
+* Anaconda environment
+  * TensorFlow 2.1
+
 ## File descriptions
-* [app.py](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/app.py) - for running trained model
 * [make_gif.py](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/make_gif.py) - for making a gif of training images
 * [model.py](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/model.py) - for model definitions
 * [parameters.py](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/parameters.py) - for model and training parameters
@@ -19,7 +23,8 @@ A GAN to create basketball shoe designs using TensorFlow 2.0. Head to the [Hard 
 $ python train.py
 ```
 
-### Running model
+### Generate images
+* To be added
 
 ## Results
 ![2000 epochs](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/training.gif)
