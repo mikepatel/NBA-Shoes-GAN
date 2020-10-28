@@ -28,4 +28,3 @@ $ python train.py
 
 ## Results
 ![2000 epochs](https://github.com/mikepatel/NBA-Shoes-GAN/blob/master/training.gif)
-
