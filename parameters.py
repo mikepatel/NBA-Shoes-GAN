@@ -24,10 +24,11 @@ import tensorflow as tf
 
 ################################################################################
 # training parameters
-NUM_EPOCHS = 20000
-BATCH_SIZE = 35  # 35
+NUM_EPOCHS = 10
+BATCH_SIZE = 7  # 35
 LEARNING_RATE = 0.0001
 BETA_1 = 0.9  # 0.5
+GEN_EPOCH = 1
 
 # model parameters
 NOISE_DIM = 100

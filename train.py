@@ -75,28 +75,30 @@ def generate_and_save_images(model, epoch, z_input, save_dir):
 
 
 # training loop
-def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
+def train(d_dataset, g_dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
     # training metrics
     d_train_loss = tf.keras.metrics.Mean("d_train_loss", dtype=tf.float32)
     g_train_loss = tf.keras.metrics.Mean("g_train_loss", dtype=tf.float32)
     train_summary_writer = tf.summary.create_file_writer(save_dir)
 
     for e in range(NUM_EPOCHS):
-        # get a batch // separate batches for G and D
-        num_batches = len(dataset)
+        num_batches = len(d_dataset)
         for i in range(num_batches):
-            batch = dataset[i]
+            # get a batch // separate batches for G and D
+            g_batch = g_dataset[i]
+            d_batch = d_dataset[i]
 
             # generate noise input
-            noise = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+            #noise = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
 
             # GradientTape
             with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
                 # generator
-                fake_batch = g(noise, training=True)
+                #fake_batch = g(noise, training=True)
+                fake_batch = g(g_batch, training=True)
 
                 # discriminator
-                real_output = d(batch, training=True)
+                real_output = d(d_batch, training=True)
                 fake_output = d(fake_batch, training=True)
 
                 # loss functions
@@ -114,7 +116,7 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
             d_train_loss(d_loss)
             g_train_loss(g_loss)
 
-        if e % 250 == 0 or e == NUM_EPOCHS-1:
+        if e % GEN_EPOCH == 0 or e == NUM_EPOCHS-1:
             # generate sample output
             generate_and_save_images(
                 model=g,
@@ -136,6 +138,10 @@ def train(dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
 ################################################################################
 # Main
 if __name__ == "__main__":
+    #
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(gpus[0], True)
+
     # print TF version
     print(f'TF version: {tf.__version__}')
 
@@ -149,7 +155,17 @@ if __name__ == "__main__":
         rescale=1./255,
     )
 
-    train_data_gen = image_generator.flow_from_directory(
+    # G training data generator
+    train_g_data_gen = image_generator.flow_from_directory(
+        directory=DATA_DIR,
+        target_size=(64, 64),
+        batch_size=BATCH_SIZE,
+        class_mode=None,
+        shuffle=True
+    )
+
+    # D training data generator
+    train_d_data_gen = image_generator.flow_from_directory(
         directory=DATA_DIR,
         target_size=(256, 256),
         batch_size=BATCH_SIZE,
@@ -181,18 +197,18 @@ if __name__ == "__main__":
     )
     generator.summary()
 
-    quit()
-
     # ----- TRAIN ----- #
     # create output directory for results
     output_dir = "results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    z_input_gen = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+    #z_input_gen = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+    z_input_gen = next(train_g_data_gen)
 
     train(
-        dataset=train_data_gen,
+        d_dataset=train_d_data_gen,
+        g_dataset=train_g_data_gen,
         d=discriminator,
         g=generator,
         d_optimizer=discriminator_optimizer,
