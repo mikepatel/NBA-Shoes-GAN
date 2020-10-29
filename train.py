@@ -85,7 +85,7 @@ def train(d_dataset, g_dataset, d, g, d_optimizer, g_optimizer, z_input, save_di
         num_batches = len(d_dataset)
         for i in range(num_batches):
             # get a batch // separate batches for G and D
-            g_batch = g_dataset[i]
+            g_batch = next(g_dataset)
             d_batch = d_dataset[i]
 
             # generate noise input
@@ -138,12 +138,12 @@ def train(d_dataset, g_dataset, d, g, d_optimizer, g_optimizer, z_input, save_di
 ################################################################################
 # Main
 if __name__ == "__main__":
-    #
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-    tf.config.experimental.set_memory_growth(gpus[0], True)
-
     # print TF version
     print(f'TF version: {tf.__version__}')
+
+    # GPU allocation
+    gpus = tf.config.list_physical_devices("GPU")
+    tf.config.experimental.set_memory_growth(gpus[0], True)
 
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
