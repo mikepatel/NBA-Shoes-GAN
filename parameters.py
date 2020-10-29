@@ -20,12 +20,15 @@ from PIL import ImageFont
 import matplotlib.pyplot as plt
 
 import tensorflow as tf
+# GPU allocation
+gpus = tf.config.experimental.list_physical_devices("GPU")
+tf.config.experimental.set_memory_growth(gpus[0], True)
 
 
 ################################################################################
 # training parameters
 NUM_EPOCHS = 10000
-BATCH_SIZE = 5  # 35
+BATCH_SIZE = 2  # 35
 LEARNING_RATE = 0.0001
 BETA_1 = 0.9  # 0.5
 GEN_EPOCH = 100

@@ -143,10 +143,6 @@ if __name__ == "__main__":
     # print TF version
     print(f'TF version: {tf.__version__}')
 
-    # GPU allocation
-    gpus = tf.config.list_physical_devices("GPU")
-    tf.config.experimental.set_memory_growth(gpus[0], True)
-
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
     # augment dataset using tf.keras.preprocessing.image.ImageDataGenerator
