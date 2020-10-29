@@ -82,7 +82,7 @@ def train(d_dataset, g_dataset, d, g, d_optimizer, g_optimizer, z_input, save_di
     train_summary_writer = tf.summary.create_file_writer(save_dir)
 
     for e in range(NUM_EPOCHS):
-        print(f'Epoch: {e+1}')
+        print(f'Epoch: {e}')
 
         num_batches = len(d_dataset)
         for i in range(num_batches):
