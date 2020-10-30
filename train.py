@@ -88,7 +88,8 @@ def train(d_dataset, g_dataset, d, g, d_optimizer, g_optimizer, z_input, save_di
         for i in range(num_batches):
             # get a batch // separate batches for G and D
             g_batch = next(g_dataset)
-            d_batch = d_dataset[i]
+            #d_batch = d_dataset[i]
+            d_batch = next(d_dataset)
 
             # generate noise input
             #noise = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
