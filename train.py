@@ -11,7 +11,7 @@ File description:
 ################################################################################
 # Imports
 from parameters import *
-from model import build_discriminator, build_generator
+from model import build_discriminator, build_discriminator_vgg16, build_generator
 
 
 ################################################################################
@@ -181,7 +181,8 @@ if __name__ == "__main__":
 
     # ----- MODEL ----- #
     # discriminator
-    discriminator = build_discriminator()
+    #discriminator = build_discriminator()
+    discriminator = build_discriminator_vgg16()
     discriminator_optimizer = tf.keras.optimizers.Adam(
         learning_rate=LEARNING_RATE,
         beta_1=BETA_1
