@@ -137,13 +137,7 @@ def build_discriminator_vgg16():
     model.add(tf.keras.layers.Flatten())
 
     model.add(tf.keras.layers.Dense(
-        units=256
-    ))
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
-
-    model.add(tf.keras.layers.Dense(
-        units=128
+        units=1024
     ))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))

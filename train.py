@@ -160,6 +160,7 @@ if __name__ == "__main__":
         target_size=(64, 64),
         batch_size=BATCH_SIZE,
         class_mode=None,
+        color_mode="rgb",
         shuffle=True
     )
 
@@ -169,6 +170,7 @@ if __name__ == "__main__":
         target_size=(256, 256),
         batch_size=BATCH_SIZE,
         class_mode=None,
+        color_mode="rgb",
         shuffle=True
         #save_to_dir=TEMP_DIR
     )

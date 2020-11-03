@@ -28,7 +28,7 @@ tf.config.experimental.set_memory_growth(gpus[0], True)
 ################################################################################
 # training parameters
 NUM_EPOCHS = 10000
-BATCH_SIZE = 4  # 35
+BATCH_SIZE = 20  # 35
 LEARNING_RATE = 0.0001
 BETA_1 = 0.9  # 0.5
 GEN_EPOCH = 100
@@ -36,7 +36,8 @@ GEN_EPOCH = 100
 # model parameters
 NOISE_DIM = 100
 LEAKY_ALPHA = 0.3  # default is 0.3
-NUM_G_RESIDUAL_BLOCKS = 10  # 16
+NUM_G_RESIDUAL_BLOCKS = 16  # 16
+DROPOUT_RATE = 0.3
 
 # image dimensions
 #IMAGE_WIDTH = 128
