@@ -162,12 +162,13 @@ if __name__ == "__main__":
         class_mode=None,
         color_mode="rgb",
         shuffle=True
+        #save_to_dir=TEMP_DIR
     )
 
     # D training data generator
     train_d_data_gen = image_generator.flow_from_directory(
         directory=DATA_DIR,
-        target_size=(256, 256),
+        target_size=(512, 512),
         batch_size=BATCH_SIZE,
         class_mode=None,
         color_mode="rgb",
@@ -180,6 +181,8 @@ if __name__ == "__main__":
     print(len(x))
     plotImages(x[:5])
     """
+    #next(train_g_data_gen)
+    #next(train_d_data_gen)
 
     # ----- MODEL ----- #
     # discriminator
