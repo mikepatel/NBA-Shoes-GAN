@@ -87,18 +87,18 @@ def train(d_dataset, g_dataset, d, g, d_optimizer, g_optimizer, z_input, save_di
         num_batches = len(d_dataset)
         for i in range(num_batches):
             # get a batch // separate batches for G and D
-            #g_batch = next(g_dataset)
+            g_batch = next(g_dataset)
             #d_batch = d_dataset[i]
             d_batch = next(d_dataset)
 
             # generate noise input
-            noise = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+            #noise = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
 
             # GradientTape
             with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
                 # generator
-                # fake_batch = g(g_batch, training=True)
-                fake_batch = g(noise, training=True)
+                fake_batch = g(g_batch, training=True)
+                #fake_batch = g(noise, training=True)
 
                 # discriminator
                 real_output = d(d_batch, training=True)
@@ -154,7 +154,6 @@ if __name__ == "__main__":
         rescale=1./255,
     )
 
-    """
     # G training data generator
     train_g_data_gen = image_generator.flow_from_directory(
         directory=DATA_DIR,
@@ -164,7 +163,6 @@ if __name__ == "__main__":
         color_mode="rgb",
         shuffle=True
     )
-    """
 
     # D training data generator
     train_d_data_gen = image_generator.flow_from_directory(
@@ -207,13 +205,13 @@ if __name__ == "__main__":
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # z_input_gen = next(train_g_data_gen)
-    z_input_gen = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+    z_input_gen = next(train_g_data_gen)
+    #z_input_gen = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
 
     train(
         d_dataset=train_d_data_gen,
-        #g_dataset=train_g_data_gen,
-        g_dataset=None,
+        g_dataset=train_g_data_gen,
+        #g_dataset=None,
         d=discriminator,
         g=generator,
         d_optimizer=discriminator_optimizer,

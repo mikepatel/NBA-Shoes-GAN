@@ -155,90 +155,6 @@ def build_discriminator_vgg16():
 # Generator
 # will use skip connections
 def build_generator():
-    model = tf.keras.Sequential()
-
-    model.add(tf.keras.layers.Dense(
-        units=4*4*512,
-        input_shape=(100, )
-    ))
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.ReLU())
-
-    model.add(tf.keras.layers.Reshape(
-        target_shape=(4, 4, 512)
-    ))
-
-    # 512 8x8
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=512,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.ReLU())
-
-    # 256 16x16
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=256,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.ReLU())
-
-    # 128 32x32
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=128,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.ReLU())
-
-    # 64 64x64
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.ReLU())
-
-    # 64 128x128
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.ReLU())
-
-    # 64 256x256
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=64,
-        kernel_size=(3, 3),
-        strides=2,
-        padding="same"
-    ))
-    model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.ReLU())
-
-    # Output 256x256x3
-    model.add(tf.keras.layers.Conv2DTranspose(
-        filters=3,
-        kernel_size=(3, 3),
-        strides=1,
-        padding="same",
-        activation=tf.keras.activations.tanh
-    ))
-
-    return model
-    """
     # residual block
     def build_residual_block(t):
         residual = t  # skip connection
@@ -269,7 +185,7 @@ def build_generator():
 
     x = inputs
 
-    # Conv
+    # Conv 64 64x64
     x = tf.keras.layers.Conv2D(
         filters=64,
         kernel_size=(3, 3),
@@ -279,14 +195,44 @@ def build_generator():
     x = tf.keras.layers.BatchNormalization()(x)
     x = tf.keras.layers.ReLU()(x)
 
+    # Conv 64 32x32
+    x = tf.keras.layers.Conv2D(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=2,
+        padding="same"
+    )(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.ReLU()(x)
+
+    # Conv 64 32x32
+    x = tf.keras.layers.Conv2D(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=1,
+        padding="same"
+    )(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.ReLU()(x)
+
+    # Conv 64 16x16
+    x = tf.keras.layers.Conv2D(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=2,
+        padding="same"
+    )(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.ReLU()(x)
+
     # skip connection
     skip = x
 
     # residual blocks
-    for i in range(NUM_G_RESIDUAL_BLOCKS):
+    for i in range(16):
         x = build_residual_block(x)
 
-    # Conv
+    # Conv 64 16x16
     x = tf.keras.layers.Conv2D(
         filters=64,
         kernel_size=(3, 3),
@@ -298,7 +244,7 @@ def build_generator():
     # add skip
     x = x + skip
 
-    # Conv / Upsample
+    # Conv / Upsample 64 32x32
     x = tf.keras.layers.Conv2DTranspose(
         filters=64,
         kernel_size=(3, 3),
@@ -308,7 +254,27 @@ def build_generator():
     x = tf.keras.layers.BatchNormalization()(x)
     x = tf.keras.layers.ReLU()(x)
 
-    # Conv / Upsample
+    # Conv / Upsample 64 64x64
+    x = tf.keras.layers.Conv2DTranspose(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=2,
+        padding="same"
+    )(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.ReLU()(x)
+
+    # Conv / Upsample 64 128x128
+    x = tf.keras.layers.Conv2DTranspose(
+        filters=64,
+        kernel_size=(3, 3),
+        strides=2,
+        padding="same"
+    )(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.ReLU()(x)
+
+    # Conv / Upsample 64 256x256
     x = tf.keras.layers.Conv2DTranspose(
         filters=64,
         kernel_size=(3, 3),
@@ -334,4 +300,3 @@ def build_generator():
     )
 
     return model
-    """
