@@ -36,6 +36,7 @@ def generate_and_save_images(model, epoch, z_input, save_dir):
 # training loop
 def train(generator, discriminator, dataset):
 
+    # loss functions
     def discriminator_loss_fn(real_output, fake_output):
         cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
@@ -51,10 +52,9 @@ def train(generator, discriminator, dataset):
         loss = cross_entropy(tf.ones_like(fake_output), fake_output)
         return loss
 
+    # optimizers
     generator_optimizer = tf.keras.optimizers.Adam()
     discriminator_optimizer = tf.keras.optimizers.Adam()
-
-    noise_seed = tf.random.normal(shape=(NUM_GEN_IMAGES, NOISE_DIM))
 
     @tf.function
     def train_step(real_batch):
@@ -75,18 +75,23 @@ def train(generator, discriminator, dataset):
         generator_optimizer.apply_gradients(zip(generator_gradients, generator.trainable_variables))
         discriminator_optimizer.apply_gradients(zip(discriminator_gradients, discriminator.trainable_variables))
 
+    # generator noise seed (in order to visualize training)
+    noise_seed = tf.random.normal(shape=(NUM_GEN_IMAGES, NOISE_DIM))
+
     # create output directory for results
     output_dir = "results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    # loop
+    # training loop
     for epoch in range(NUM_EPOCHS):
         print(f'Epoch: {epoch}')
-        
+
+        # train over batch
         for batch in dataset:
             train_step(batch)
 
+        # generate images while training
         generate_and_save_images(
             model=generator,
             epoch=epoch,
