@@ -15,47 +15,6 @@ from model import build_discriminator, build_discriminator_vgg16, build_generato
 
 
 ################################################################################
-# plot images in a 1x5 grid
-def plot_images(images_arr):
-    fig, axes = plt.subplots(1, 5, figsize=(20, 20))
-    axes = axes.flatten()
-    for img, ax in zip( images_arr, axes):
-        ax.imshow(img)
-        ax.axis('off')
-    plt.tight_layout()
-    plt.show()
-
-
-# discriminaor loss function
-def discriminator_loss(real_output, fake_output):
-    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
-
-    real_loss = cross_entropy(
-        tf.ones_like(real_output),
-        real_output
-    )
-
-    fake_loss = cross_entropy(
-        tf.zeros_like(fake_output),
-        fake_output
-    )
-
-    total_loss = real_loss + fake_loss
-    return total_loss
-
-
-# generator loss function
-def generator_loss(generated_output):
-    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
-
-    generated_loss = cross_entropy(
-        tf.ones_like(generated_output),
-        generated_output
-    )
-
-    return generated_loss
-
-
 # generate and save images
 def generate_and_save_images(model, epoch, z_input, save_dir):
     predictions = model(z_input, training=False)
@@ -75,67 +34,65 @@ def generate_and_save_images(model, epoch, z_input, save_dir):
 
 
 # training loop
-def train(d_dataset, g_dataset, d, g, d_optimizer, g_optimizer, z_input, save_dir):
-    # training metrics
-    d_train_loss = tf.keras.metrics.Mean("d_train_loss", dtype=tf.float32)
-    g_train_loss = tf.keras.metrics.Mean("g_train_loss", dtype=tf.float32)
-    train_summary_writer = tf.summary.create_file_writer(save_dir)
+def train(generator, discriminator, dataset):
 
-    for e in range(NUM_EPOCHS):
-        print(f'Epoch: {e}')
+    def discriminator_loss_fn(real_output, fake_output):
+        cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
-        num_batches = len(d_dataset)
-        for i in range(num_batches):
-            # get a batch // separate batches for G and D
-            g_batch = next(g_dataset)
-            #d_batch = d_dataset[i]
-            d_batch = next(d_dataset)
+        real_loss = cross_entropy(tf.ones_like(real_output), real_output)
+        fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
 
-            # generate noise input
-            #noise = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+        total_loss = real_loss + fake_loss
+        return total_loss
 
-            # GradientTape
-            with tf.GradientTape() as g_tape, tf.GradientTape() as d_tape:
-                # generator
-                fake_batch = g(g_batch, training=True)
-                #fake_batch = g(noise, training=True)
+    def generator_loss_fn(fake_output):
+        cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
-                # discriminator
-                real_output = d(d_batch, training=True)
-                fake_output = d(fake_batch, training=True)
+        loss = cross_entropy(tf.ones_like(fake_output), fake_output)
+        return loss
 
-                # loss functions
-                g_loss = generator_loss(fake_output)
-                d_loss = discriminator_loss(real_output, fake_output)
+    generator_optimizer = tf.keras.optimizers.Adam()
+    discriminator_optimizer = tf.keras.optimizers.Adam()
 
-            # compute gradients recorded on "tape"
-            g_gradients = g_tape.gradient(g_loss, g.trainable_variables)
-            d_gradients = d_tape.gradient(d_loss, d.trainable_variables)
+    noise_seed = tf.random.normal(shape=(NUM_GEN_IMAGES, NOISE_DIM))
 
-            # apply gradients to model variables to minimize loss function
-            g_optimizer.apply_gradients(zip(g_gradients, g.trainable_variables))
-            d_optimizer.apply_gradients(zip(d_gradients, d.trainable_variables))
+    @tf.function
+    def train_step(real_batch):
+        noise = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
 
-            d_train_loss(d_loss)
-            g_train_loss(g_loss)
+        with tf.GradientTape() as generator_tape, tf.GradientTape() as discriminator_tape:
+            fake_images = generator(noise, training=True)
 
-        if e % GEN_EPOCH == 0 or e == NUM_EPOCHS-1:
-            # generate sample output
-            generate_and_save_images(
-                model=g,
-                epoch=e,
-                z_input=z_input,
-                save_dir=save_dir
-            )
+            real_output = discriminator(real_batch, training=True)
+            fake_output = discriminator(fake_images, training=True)
 
-        # write loss metrics to TensorBoard
-        with train_summary_writer.as_default():
-            tf.summary.scalar("d_loss", d_train_loss.result(), step=e)
-            tf.summary.scalar("g_loss", g_train_loss.result(), step=e)
+            generator_loss = generator_loss_fn(fake_output=fake_output)
+            discriminator_loss = discriminator_loss_fn(real_output=real_output, fake_output=fake_output)
 
-        # reset metrics every epoch
-        d_train_loss.reset_states()
-        g_train_loss.reset_states()
+        generator_gradients = generator_tape.gradient(generator_loss, generator.trainable_variables)
+        discriminator_gradients = discriminator_tape.gradient(discriminator_loss, discriminator.trainable_variables)
+
+        generator_optimizer.apply_gradients(zip(generator_gradients, generator.trainable_variables))
+        discriminator_optimizer.apply_gradients(zip(discriminator_gradients, discriminator.trainable_variables))
+
+    # create output directory for results
+    output_dir = "results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # loop
+    for epoch in range(NUM_EPOCHS):
+        print(f'Epoch: {epoch}')
+        
+        for batch in dataset:
+            train_step(batch)
+
+        generate_and_save_images(
+            model=generator,
+            epoch=epoch,
+            z_input=noise_seed,
+            save_dir=output_dir
+        )
 
 
 ################################################################################
@@ -146,79 +103,36 @@ if __name__ == "__main__":
 
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
-    # augment dataset using tf.keras.preprocessing.image.ImageDataGenerator
-    image_generator = tf.keras.preprocessing.image.ImageDataGenerator(
-        # rotation_range=30,  # degrees
-        horizontal_flip=True,
-        #channel_shift_range=80.0,
-        rescale=1./255,
-    )
+    (train_images, _), (_, _) = tf.keras.datasets.cifar10.load_data()
+    #train_images = train_images.reshape(train_images.shape[0], 32, 32, 3)  # og shape is (50k, 32, 32, 3)
+    train_images = train_images.astype(np.float32)
 
-    # G training data generator
-    train_g_data_gen = image_generator.flow_from_directory(
-        directory=DATA_DIR,
-        target_size=(64, 64),
-        batch_size=BATCH_SIZE,
-        class_mode=None,
-        color_mode="rgb",
-        shuffle=True
-        #save_to_dir=TEMP_DIR
-    )
+    # rescale from [0, 255] to [-1, 1]
+    train_images = (train_images - 127.5) / 127.5
+    print(train_images.shape)
 
-    # D training data generator
-    train_d_data_gen = image_generator.flow_from_directory(
-        directory=DATA_DIR,
-        target_size=(512, 512),
-        batch_size=BATCH_SIZE,
-        class_mode=None,
-        color_mode="rgb",
-        shuffle=True
-        #save_to_dir=TEMP_DIR
-    )
-
-    """
-    x = next(train_data_gen)
-    print(len(x))
-    plotImages(x[:5])
-    """
-    #next(train_g_data_gen)
-    #next(train_d_data_gen)
+    # dataset
+    dataset = tf.data.Dataset.from_tensor_slices(train_images)
+    dataset = dataset.shuffle(buffer_size=train_images.shape[0])
+    dataset = dataset.batch(batch_size=BATCH_SIZE)
 
     # ----- MODEL ----- #
-    # discriminator
-    #discriminator = build_discriminator()
-    discriminator = build_discriminator_vgg16()
-    discriminator_optimizer = tf.keras.optimizers.Adam(
-        learning_rate=LEARNING_RATE,
-        beta_1=BETA_1
-    )
-    discriminator.summary()
+    g = build_generator()
+    g.summary()
 
-    # generator
-    generator = build_generator()
-    generator_optimizer = tf.keras.optimizers.Adam(
-        learning_rate=LEARNING_RATE,
-        beta_1=BETA_1
-    )
-    generator.summary()
+    """
+    noise = tf.random.normal(shape=(1, NOISE_DIM))
+    z = g(noise, training=False)
+    z = tf.squeeze(z, axis=0)
+    z = tf.keras.preprocessing.image.array_to_img(z)
+    z.show()
+    """
+    d = build_discriminator()
+    d.summary()
 
     # ----- TRAIN ----- #
-    # create output directory for results
-    output_dir = "results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    z_input_gen = next(train_g_data_gen)
-    #z_input_gen = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
-
     train(
-        d_dataset=train_d_data_gen,
-        g_dataset=train_g_data_gen,
-        #g_dataset=None,
-        d=discriminator,
-        g=generator,
-        d_optimizer=discriminator_optimizer,
-        g_optimizer=generator_optimizer,
-        z_input=z_input_gen,
-        save_dir=output_dir
+        generator=g,
+        discriminator=d,
+        dataset=dataset
     )
