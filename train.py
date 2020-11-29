@@ -99,6 +99,14 @@ def train(generator, discriminator, dataset):
             save_dir=output_dir
         )
 
+    # generate one more image for the last epoch
+    generate_and_save_images(
+        model=generator,
+        epoch=NUM_EPOCHS,
+        z_input=noise_seed,
+        save_dir=output_dir
+    )
+
 
 ################################################################################
 # Main
@@ -132,7 +140,8 @@ if __name__ == "__main__":
     z = tf.keras.preprocessing.image.array_to_img(z)
     z.show()
     """
-    d = build_discriminator()
+    #d = build_discriminator()
+    d = build_discriminator_vgg16()
     d.summary()
 
     # ----- TRAIN ----- #

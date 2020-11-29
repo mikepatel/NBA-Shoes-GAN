@@ -27,7 +27,7 @@ import tensorflow as tf
 
 ################################################################################
 # training parameters
-NUM_EPOCHS = 100
+NUM_EPOCHS = 1000
 BATCH_SIZE = 256  # 35
 LEARNING_RATE = 0.0001
 BETA_1 = 0.9  # 0.5

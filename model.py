@@ -62,7 +62,7 @@ def build_discriminator():
 # VGG16 Discriminator
 def build_discriminator_vgg16():
     vgg16 = tf.keras.applications.vgg16.VGG16(
-        input_shape=(512, 512, 3),
+        input_shape=(32, 32, 3),
         include_top=False
     )
 
