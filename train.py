@@ -87,10 +87,6 @@ def train(generator, discriminator, dataset):
     for epoch in range(NUM_EPOCHS):
         print(f'Epoch: {epoch}')
 
-        # train over batch
-        for batch in dataset:
-            train_step(batch)
-
         # generate images while training
         generate_and_save_images(
             model=generator,
@@ -98,6 +94,10 @@ def train(generator, discriminator, dataset):
             z_input=noise_seed,
             save_dir=output_dir
         )
+
+        # train over batch
+        for batch in dataset:
+            train_step(batch)
 
     # generate one more image for the last epoch
     generate_and_save_images(
@@ -116,6 +116,7 @@ if __name__ == "__main__":
 
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
+    """
     (train_images, _), (_, _) = tf.keras.datasets.cifar10.load_data()
     #train_images = train_images.reshape(train_images.shape[0], 32, 32, 3)  # og shape is (50k, 32, 32, 3)
     train_images = train_images.astype(np.float32)
@@ -128,6 +129,53 @@ if __name__ == "__main__":
     dataset = tf.data.Dataset.from_tensor_slices(train_images)
     dataset = dataset.shuffle(buffer_size=train_images.shape[0])
     dataset = dataset.batch(batch_size=BATCH_SIZE)
+    """
+
+    # shoes dataset
+    """
+    # rescale from [0, 255] to [-1, 1]
+    def rescale_fn(x):
+        x = (x - 127.5) / 127.5
+        return x
+
+    image_generator = tf.keras.preprocessing.image.ImageDataGenerator(
+        horizontal_flip=True,
+        dtype=np.float32,
+        preprocessing_function=rescale_fn
+    )
+
+    dataset = image_generator.flow_from_directory(
+        directory=DATA_DIR,
+        target_size=(32, 32),
+        color_mode="rgb",
+        classes=None,
+        class_mode=None,
+        batch_size=BATCH_SIZE,
+        shuffle=True
+    )
+    """
+    train_images = []
+    for f in os.listdir(TRAIN_DIR):
+        filepath = TRAIN_DIR + "\\" + f
+        image = Image.open(filepath)
+        image = image.convert("RGB")
+        image = image.resize(size=(32, 32))
+        image = tf.keras.preprocessing.image.img_to_array(image)
+        image = (image - 127.5) / 127.5
+        #image = image / 255.0
+        image = tf.convert_to_tensor(image)
+        train_images.append(image)
+
+    dataset_size = len(train_images)
+    dataset = tf.data.Dataset.from_tensor_slices(train_images)
+    dataset = dataset.prefetch(buffer_size=dataset_size)
+    dataset = dataset.cache()
+    dataset = dataset.shuffle(buffer_size=dataset_size)
+    dataset = dataset.batch(batch_size=BATCH_SIZE)
+
+    #print(dataset)
+    #print(len(list(dataset)))
+    #quit()
 
     # ----- MODEL ----- #
     g = build_generator()
