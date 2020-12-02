@@ -56,6 +56,24 @@ def train(discriminator, generator, dataset):
     )
 
     # train on batch
+    #@tf.function
+    def train_step(real_batch):
+        noise = tf.random.normal(shape=(BATCH_SIZE, NOISE_DIM))
+
+        with tf.GradientTape() as generator_tape, tf.GradientTape() as discriminator_tape:
+            fake_images = generator(noise, training=True)
+
+            real_output = discriminator(real_batch, training=True)
+            fake_output = discriminator(fake_images, training=True)
+
+            generator_loss = generator_loss_fn(fake_output=fake_output)
+            discriminator_loss = discriminator_loss_fn(real_output=real_output, fake_output=fake_output)
+
+        generator_gradients = generator_tape.gradient(generator_loss, generator.trainable_variables)
+        discriminator_gradients = discriminator_tape.gradient(discriminator_loss, discriminator.trainable_variables)
+
+        generator_optimizer.apply_gradients(zip(generator_gradients, generator.trainable_variables))
+        discriminator_optimizer.apply_gradients(zip(discriminator_gradients, discriminator.trainable_variables))
 
     # generator noise seed (in order to visualize training)
     noise_seed = tf.random.normal(shape=(NUM_GEN_IMAGES, NOISE_DIM))
@@ -78,6 +96,8 @@ def train(discriminator, generator, dataset):
         )
 
         # train over batch
+        for batch in dataset:
+            train_step(batch)
 
     # generate one more image for the last epoch
     generate_and_save_images(
