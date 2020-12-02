@@ -68,6 +68,7 @@ if __name__ == "__main__":
         shuffle=True
     )
 
+    """
     x = next(dataset)
     x = x[:16]
     for i in range(16):
@@ -78,6 +79,7 @@ if __name__ == "__main__":
     plt.savefig("x")
     plt.close()
     quit()
+    """
 
     # ----- MODEL ----- #
     d = build_discriminator()
