@@ -30,8 +30,30 @@ def generate_and_save_images(model, epoch, z_input, save_dir):
 # train
 def train(discriminator, generator, dataset):
     # loss functions
+    def discriminator_loss_fn(real_output, fake_output):
+        cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+        real_loss = cross_entropy(tf.ones_like(real_output), real_output)
+        fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
+
+        total_loss = real_loss + fake_loss
+        return total_loss
+
+    def generator_loss_fn(fake_output):
+        cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+        loss = cross_entropy(tf.ones_like(fake_output), fake_output)
+        return loss
 
     # optimizers
+    generator_optimizer = tf.keras.optimizers.Adam(
+        learning_rate=LEARNING_RATE,
+        beta_1=BETA_1
+    )
+    discriminator_optimizer = tf.keras.optimizers.Adam(
+        learning_rate=LEARNING_RATE,
+        beta_1=BETA_1
+    )
 
     # train on batch
 
@@ -82,11 +104,11 @@ if __name__ == "__main__":
     """
 
     # ----- MODEL ----- #
-    d = build_discriminator()
-    d.summary()
-
     g = build_generator()
     g.summary()
+
+    d = build_discriminator()
+    d.summary()
 
     quit()
 
