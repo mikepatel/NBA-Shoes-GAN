@@ -58,16 +58,34 @@ def train(discriminator, generator, dataset):
     # train on batch
 
     # generator noise seed (in order to visualize training)
+    noise_seed = tf.random.normal(shape=(NUM_GEN_IMAGES, NOISE_DIM))
 
     # create output directory for results
+    output_dir = "results\\" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     # training loop
-    print()
+    for epoch in range(NUM_EPOCHS):
+        print(f'Epoch: {epoch}')
+
         # generate images while training
+        generate_and_save_images(
+            model=generator,
+            epoch=epoch,
+            z_input=noise_seed,
+            save_dir=output_dir
+        )
 
         # train over batch
 
     # generate one more image for the last epoch
+    generate_and_save_images(
+        model=generator,
+        epoch=NUM_EPOCHS,
+        z_input=noise_seed,
+        save_dir=output_dir
+    )
 
 
 ################################################################################
