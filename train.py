@@ -15,7 +15,7 @@ def generate_and_save_images(model, epoch, z_input, save_dir):
     predictions = predictions[:NUM_GEN_IMAGES]  # generate 16 images
 
     # rescale from [-1, 1] to [0, 1]
-    #predictions = (predictions + 1) / 2
+    predictions = (predictions + 1) / 2
 
     for i in range(NUM_GEN_IMAGES):
         plt.subplot(4, 4, i+1)
@@ -111,6 +111,9 @@ def train(discriminator, generator, dataset):
 ################################################################################
 # Main
 if __name__ == "__main__":
+    physical_devices = tf.config.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
     image_generator = tf.keras.preprocessing.image.ImageDataGenerator(
@@ -148,7 +151,16 @@ if __name__ == "__main__":
     d = build_discriminator()
     d.summary()
 
+    """
+    noise = tf.random.normal(shape=(1, NOISE_DIM))
+    x = g(inputs=tf.random.normal(shape=(1, NOISE_DIM)), training=False)
+    x = x[0]
+    print(x)
+    x = (x + 1) / 2
+    plt.imshow(x)
+    plt.savefig("x")
     quit()
+    """
 
     # ----- TRAIN ----- #
     train(
