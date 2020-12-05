@@ -15,7 +15,7 @@ def generate_and_save_images(model, epoch, z_input, save_dir):
     predictions = predictions[:NUM_GEN_IMAGES]  # generate 16 images
 
     # rescale from [-1, 1] to [0, 1]
-    predictions = (predictions + 1) / 2
+    predictions = (predictions + 1.0) / 2.0
 
     for i in range(NUM_GEN_IMAGES):
         plt.subplot(4, 4, i+1)
@@ -109,7 +109,7 @@ def train(discriminator, generator, dataset):
     )
 
     # save trained generator model
-    save_model_filepath = os.path.join("saved_model")
+    save_model_filepath = SAVED_MODEL_DIR
     generator.save(save_model_filepath)
 
 
@@ -117,7 +117,7 @@ def train(discriminator, generator, dataset):
 # Main
 if __name__ == "__main__":
     physical_devices = tf.config.list_physical_devices('GPU')
-    #tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
