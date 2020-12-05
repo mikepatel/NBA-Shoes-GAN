@@ -117,7 +117,7 @@ def train(discriminator, generator, dataset):
 # Main
 if __name__ == "__main__":
     physical_devices = tf.config.list_physical_devices('GPU')
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    #tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
     # ----- ETL ----- #
     # ETL = Extraction, Transformation, Load
@@ -153,8 +153,8 @@ if __name__ == "__main__":
     g = build_generator()
     g.summary()
 
-    #d = build_discriminator()
-    d = build_discriminator_vgg16()
+    d = build_discriminator()
+    #d = build_discriminator_vgg16()
     d.summary()
 
     """
