@@ -52,6 +52,33 @@ def build_discriminator():
 
 
 ################################################################################
+# VGG16 Discriminator
+def build_discriminator_vgg16():
+    vgg16 = tf.keras.applications.vgg16.VGG16(
+        input_shape=(64, 64, 3),
+        include_top=False
+    )
+
+    vgg16.trainable = False
+
+    model = tf.keras.Sequential()
+    model.add(vgg16)
+    model.add(tf.keras.layers.Flatten())
+    model.add(tf.keras.layers.Dense(
+        units=512
+    ))
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.LeakyReLU(alpha=LEAKY_ALPHA))
+
+    model.add(tf.keras.layers.Dense(
+        units=1,
+        activation=tf.keras.activations.sigmoid
+    ))
+
+    return model
+
+
+################################################################################
 # Generator
 def build_generator():
     def block(t, filters):

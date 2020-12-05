@@ -5,7 +5,7 @@
 ################################################################################
 # Imports
 from parameters import *
-from model import build_discriminator, build_generator
+from model import build_discriminator, build_generator, build_discriminator_vgg16
 
 
 ################################################################################
@@ -96,7 +96,8 @@ def train(discriminator, generator, dataset):
         )
 
         # train over batch
-        for batch in dataset:
+        for i in range(len(dataset)):
+            batch = dataset[i]
             train_step(batch)
 
     # generate one more image for the last epoch
@@ -106,6 +107,10 @@ def train(discriminator, generator, dataset):
         z_input=noise_seed,
         save_dir=output_dir
     )
+
+    # save trained generator model
+    save_model_filepath = os.path.join("saved_model")
+    generator.save(save_model_filepath)
 
 
 ################################################################################
@@ -148,7 +153,8 @@ if __name__ == "__main__":
     g = build_generator()
     g.summary()
 
-    d = build_discriminator()
+    #d = build_discriminator()
+    d = build_discriminator_vgg16()
     d.summary()
 
     """
